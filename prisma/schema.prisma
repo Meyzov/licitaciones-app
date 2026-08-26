@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,144 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas = ["public"]
+}
+
+enum Rol {
+  admin
+  user
+
+  @@schema("public")
+}
+
+enum EstadoLicitacion {
+  borrador
+  activa
+  finalizada
+  por_cobrar
+  cobrada
+  perdida
+
+  @@schema("public")
+}
+
+model Usuario {
+  id String @id @db.Uuid
+  email String @unique
+  nombre String
+  rol Rol @default(user)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  clientesCreados Cliente[] @relation("ClienteCreadoPor")
+  clientesModificados Cliente[] @relation("ClienteModificadoPor")
+  licitacionesCreadas Licitacion[] @relation("LicitacionCreadoPor")
+  licitacionesModificadas Licitacion[] @relation("LicitacionModificadoPor")
+  productosCreados Producto[] @relation("ProductoCreadoPor")
+  productosModificados Producto[] @relation("ProductoModificadoPor")
+  pagosRegistrados Pago[] @relation("PagoCreadoPor")
+  transicionesEjecutadas HistorialTransicion[]
+
+  @@map("usuarios")
+  @@schema("public")
+}
+
+model Cliente {
+  id String @id @default(uuid()) @db.Uuid
+  nombre String
+  email String
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String @map("created_by") @db.Uuid
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedBy String? @map("updated_by") @db.Uuid
+
+  creador Usuario @relation("ClienteCreadoPor", fields: [createdBy], references: [id])
+  modificador Usuario? @relation("ClienteModificadoPor", fields: [updatedBy], references: [id])
+  licitaciones Licitacion[]
+
+  @@map("clientes")
+  @@schema("public")
+}
+
+model Licitacion {
+  id String @id @default(uuid()) @db.Uuid
+  clienteId String @map("cliente_id") @db.Uuid
+  presupuestoMaximo Decimal @map("presupuesto_maximo") @db.Decimal(12, 2)
+  fechaLimite DateTime @map("fecha_limite")
+  estado EstadoLicitacion @default(borrador)
+  documentoPropuestaUrl String? @map("documento_propuesta_url")
+  recordatorioEnviado Boolean @default(false) @map("recordatorio_enviado")
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String @map("created_by") @db.Uuid
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedBy String? @map("updated_by") @db.Uuid
+
+  cliente Cliente @relation(fields: [clienteId], references: [id])
+  creador Usuario @relation("LicitacionCreadoPor", fields: [createdBy], references: [id])
+  modificador Usuario? @relation("LicitacionModificadoPor", fields: [updatedBy], references: [id])
+  productos LicitacionProducto[]
+  pagos Pago[]
+  historial HistorialTransicion[]
+
+  @@map("licitaciones")
+  @@schema("public")
+}
+
+model Producto {
+  id String @id @default(uuid()) @db.Uuid
+  nombre String
+  precioBase Decimal @map("precio_base") @db.Decimal(12, 2)
+  createdAt DateTime @default(now()) @map("created_at")
+  createdBy String @map("created_by") @db.Uuid
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedBy String? @map("updated_by") @db.Uuid
+
+  creador Usuario @relation("ProductoCreadoPor", fields: [createdBy], references: [id])
+  modificador Usuario? @relation("ProductoModificadoPor", fields: [updatedBy], references: [id])
+  licitaciones LicitacionProducto[]
+
+  @@map("productos")
+  @@schema("public")
+}
+
+model LicitacionProducto {
+  licitacionId String @map("licitacion_id") @db.Uuid
+  productoId String @map("producto_id") @db.Uuid
+  cantidad Int
+  precioAcordado Decimal @map("precio_acordado") @db.Decimal(12, 2)
+
+  licitacion Licitacion @relation(fields: [licitacionId], references: [id], onDelete: Cascade)
+  producto Producto @relation(fields: [productoId], references: [id])
+
+  @@id([licitacionId, productoId])
+  @@map("licitacion_producto")
+  @@schema("public")
+}
+
+model Pago {
+  id String @id @default(uuid()) @db.Uuid
+  licitacionId String @map("licitacion_id") @db.Uuid
+  monto Decimal @db.Decimal(12, 2)
+  fecha DateTime @default(now())
+  createdBy String @map("created_by") @db.Uuid
+
+  licitacion Licitacion @relation(fields: [licitacionId], references: [id])
+  creador Usuario @relation("PagoCreadoPor", fields: [createdBy], references: [id])
+
+  @@map("pagos")
+  @@schema("public")
+}
+
+model HistorialTransicion {
+  id String @id @default(uuid()) @db.Uuid
+  licitacionId String @map("licitacion_id") @db.Uuid
+  usuarioId String @map("usuario_id") @db.Uuid
+  estadoAnterior EstadoLicitacion? @map("estado_anterior")
+  estadoNuevo EstadoLicitacion @map("estado_nuevo")
+  fechaHora DateTime @default(now()) @map("fecha_hora")
+
+  licitacion Licitacion @relation(fields: [licitacionId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+  @@map("historial_transicion")
+  @@schema("public")
 }

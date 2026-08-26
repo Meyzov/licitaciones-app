@@ -1,0 +1,120 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f3ef;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.paperCard {
+    width: 100%;
+    max-width: 420px;
+    background-color: #fcfbf9;
+    padding: 40px 36px;
+    border-radius: 8px;
+    border: 1px solid #e2ded4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02), 0 8px 16px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+}
+
+.header {
+    text-align: center;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c302e;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.3px;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #6e7471;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.divider {
+    height: 1px;
+    background-color: #ece8df;
+    margin: 24px 0;
+    width: 100%;
+}
+
+.bottomDivider {
+    height: 1px;
+    background-color: #ece8df;
+    margin: 4px 0 24px 0;
+    width: 100%;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #474d4a;
+    letter-spacing: 0.2px;
+}
+
+.paperInput {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid #dcd7cc;
+    font-size: 14px;
+    color: #2c302e;
+    outline: none;
+    background-color: #f7f5f0;
+    box-sizing: border-box;
+}
+
+.passwordContainer {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+.sideButton {
+    height: 44px;
+    width: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f7f5f0;
+    border: 1px solid #dcd7cc;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.paperButton {
+    height: 44px;
+    width: 100%;
+    background-color: #3a5a40;
+    color: #fcfbf9;
+    border: 1px solid #2d4732;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(58, 90, 64, 0.15);
+}
