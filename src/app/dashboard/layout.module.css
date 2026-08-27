@@ -1,0 +1,224 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f3f1ea;
+    color: #2c302e;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    box-sizing: border-box;
+    padding: 16px;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.topBarWrapper {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    align-items: center;
+}
+
+.topHeaderCard {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    flex: 1;
+    z-index: 50;
+}
+
+.topLeftSection {
+    display: flex;
+    align-items: center;
+}
+
+.pageTitleCard {
+    background-color: #f3efe6;
+    border: 1px solid #dcd6c7;
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    box-sizing: border-box;
+}
+
+.pageTitleIcon {
+    color: #4b5563;
+    flex-shrink: 0;
+}
+
+.pageTitleText {
+    font-size: 13px;
+    font-weight: 500;
+    color: #636965;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.avatarEnhanced {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background-color: #e8e3d5;
+    color: #2c302e;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #dcd6c7;
+}
+
+.userInfoEnhanced {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    line-height: 1.2;
+}
+
+.userName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+}
+
+.userRole {
+    font-size: 10px;
+    color: #808682;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.logoutButton {
+    background: #fcf5f4;
+    border: 1px solid #f2d3cf;
+    color: #c95d53;
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.logoutButton:hover {
+    background-color: #c95d53;
+    color: #fcfbf9;
+}
+
+.sidebar {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 8px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.sidebarGroupCard {
+    background-color: #f3efe6;
+    border: 1px solid #dcd6c7;
+    border-radius: 8px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.sidebarList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebarItemLink {
+    text-decoration: none;
+}
+
+.sidebarItemContent {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #636965;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sidebarIcon {
+    flex-shrink: 0;
+}
+
+.sidebarText {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebarItemContent:hover {
+    background-color: #fcfbf9;
+    color: #2c302e;
+}
+
+.activeSidebarItem {
+    background-color: #fcfbf9;
+    color: #2c302e;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.contentArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.sidebarSectionHeader {
+    padding: 6px 10px 4px 10px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebarSectionTitle {
+    font-size: 10px;
+    font-weight: 700;
+    color: #808682;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+}

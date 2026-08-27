@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import styles from "./page.module.css";
+import styles from "@/app/dashboard/page.module.css";
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -32,7 +32,7 @@ export default function DashboardHomePage() {
                 variants={itemVariants}
                 className={styles.cardPanel} >
 
-                <h2 className={styles.panelTitle}>Dashboard</h2>
+                <h2 className={styles.panelTitle}>Productos</h2>
             </motion.section>
         </motion.div>
     );

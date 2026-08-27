@@ -1,0 +1,236 @@
+.dashboardRoot {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 900px) {
+    .metricsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.metricCard {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metricCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.metricHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.metricLabel {
+    font-size: 10px;
+    font-weight: 700;
+    color: #7b827d;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.metricIconBadge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background-color: #f3efe6;
+    border: 1px solid #dcd6c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #636965;
+}
+
+.metricIconAlert {
+    background-color: #fcf5f4;
+    border-color: #f2d3cf;
+    color: #c95d53;
+}
+
+.metricValueRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.metricValue {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c302e;
+    letter-spacing: -0.03em;
+}
+
+.metricTrend {
+    font-size: 11px;
+    font-weight: 600;
+    color: #2e7d32;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.metricTrendAlert {
+    color: #c95d53;
+}
+
+.workspaceGrid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 16px;
+}
+
+@media (max-width: 1024px) {
+    .workspaceGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cardPanel {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    flex: 1;
+}
+
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0ecdf;
+}
+
+.panelTitle {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #2c302e;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.panelAction {
+    font-size: 11px;
+    font-weight: 600;
+    color: #7b827d;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    transition: color 0.15s ease;
+}
+
+.panelAction:hover {
+    color: #2c302e;
+}
+
+.itemList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.itemRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px;
+    background-color: #f7f5ef;
+    border: 1px solid #ede8df;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.itemRow:hover {
+    background-color: #f2eee3;
+    border-color: #dcd6c7;
+}
+
+.itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.itemTitleText {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #2c302e;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.itemSubText {
+    font-size: 10.5px;
+    color: #7b827d;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.itemSideAction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.statusPill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.pillActive {
+    background-color: #edf7ed;
+    color: #1b7a30;
+    border: 1px solid #c8e6c9;
+}
+
+.pillWarning {
+    background-color: #fcf5f4;
+    color: #c95d53;
+    border: 1px solid #f2d3cf;
+}
+
+.amountHighlight {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #2c302e;
+}
