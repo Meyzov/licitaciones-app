@@ -1,0 +1,114 @@
+.asideWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.sidebarPanel {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.sidebarPanelScrollable {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebarGroupCard {
+    background-color: #f3efe6;
+    border: 1px solid #dcd6c7;
+    border-radius: 8px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.toggleButton {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+}
+
+.itemList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.itemLink {
+    text-decoration: none;
+}
+
+.itemContent {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #636965;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.itemContent:hover {
+    background-color: #fcfbf9;
+    color: #2c302e;
+}
+
+.itemActive {
+    background-color: #fcfbf9;
+    color: #2c302e;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.itemIcon {
+    flex-shrink: 0;
+}
+
+.itemLabel {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sectionTitle {
+    font-size: 10px;
+    font-weight: 700;
+    color: #808682;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
     LayoutDashboard,
@@ -12,59 +13,134 @@ import {
     Settings,
     Menu,
 } from "lucide-react";
-import styles from "@/app/dashboard/layout.module.css";
+import styles from "./sidePanel.module.css";
 
 type SidePanelProps = {
     isExpanded: boolean;
     setIsExpanded: (expanded: boolean) => void;
 };
 
-const generalSection = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-];
+type NavItem = {
+    label: string;
+    href: string;
+    icon: React.ElementType;
+};
 
-const managementSection = [
-    { label: "Licitaciones", href: "/licitaciones", icon: FileSpreadsheet },
-    { label: "Productos", href: "/productos", icon: Package },
-    { label: "Clientes", href: "/clientes", icon: Users },
+const NAV_SECTIONS: Array<{ title: string | null; items: NavItem[] }> = [
+    { title: "General", items: [{ label: "Dashboard", href: "/dashboard", icon: LayoutDashboard }] },
+    {
+        title: "Gestión",
+        items: [
+            { label: "Licitaciones", href: "/licitaciones", icon: FileSpreadsheet },
+            { label: "Productos", href: "/productos", icon: Package },
+            { label: "Clientes", href: "/clientes", icon: Users },
+        ],
+    },
+    { title: "Sistema", items: [{ label: "Usuarios", href: "/usuarios", icon: UserCheck }] },
+    { title: null, items: [{ label: "Configuración", href: "/configuracion", icon: Settings }] },
 ];
-
-const systemSection = [
-    { label: "Usuarios", href: "/usuarios", icon: UserCheck },
-];
-
-const configSection = [
-    { label: "Configuración", href: "/configuracion", icon: Settings },
-];
-
 
 export default function SidePanel({ isExpanded, setIsExpanded }: SidePanelProps) {
     const pathname = usePathname();
+    const [isAndroid, setIsAndroid] = useState(false);
 
-    const renderSidebarItem = (item: { label: string; href: string; icon: React.ElementType }) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-        return (
-            <li key={item.href}>
-                <Link href={item.href} className={styles.sidebarItemLink} title={!isExpanded ? item.label : undefined}>
-                    <div className={`${styles.sidebarItemContent} ${isActive ? styles.activeSidebarItem : ""}`}>
-                        <Icon size={18} className={styles.sidebarIcon} />
-                        <motion.span
-                            initial={false}
-                            animate={{ opacity: isExpanded ? 1 : 0, width: isExpanded ? "auto" : 0 }}
-                            transition={{ duration: 0.15, ease: "easeInOut" }}
-                            className={styles.sidebarText}
-                            style={{ pointerEvents: isExpanded ? "auto" : "none", overflow: "hidden" }} >
+    useEffect(() => {
+        const userAgent = String(navigator.userAgent || navigator.vendor || (window as unknown as { opera?: string }).opera || "");
 
-                            {item.label}
-                        </motion.span>
-                    </div>
-                </Link>
-            </li>
-        );
+        if (/android/i.test(userAgent)) {
+            queueMicrotask(() => {
+                setIsAndroid(true);
+                setIsExpanded(false);
+            });
+        }
+    }, [setIsExpanded]);
+
+    const effectiveExpanded = isAndroid ? false : isExpanded;
+    const handleToggle = () => {
+        if (isAndroid) return;
+        setIsExpanded(!isExpanded);
     };
 
-    const renderSectionHeader = (title: string) => (
+    return (
+        <motion.aside
+            initial={false}
+            animate={{ width: effectiveExpanded ? 200 : 66 }}
+            transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
+            className={styles.asideWrapper} >
+
+            <div className={styles.sidebarPanel}>
+                <div className={styles.sidebarGroupCard}>
+                    <button
+                        type="button"
+                        onClick={handleToggle}
+                        className={styles.toggleButton}
+                        aria-label="Expandir o colapsar menú lateral" >
+
+                        <div className={styles.itemContent}>
+                            <Menu size={18} className={styles.itemIcon} />
+
+                            <AnimatedLabel isExpanded={effectiveExpanded}>
+                                Menú
+                            </AnimatedLabel>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div className={`${styles.sidebarPanel} ${styles.sidebarPanelScrollable}`}>
+                {NAV_SECTIONS.map(({ title, items }) => (
+                    <div
+                        key={title ?? "no-title"}
+                        className={styles.sidebarGroupCard}
+                        style={{ gap: effectiveExpanded ? "4px" : "0px", marginTop: title === null ? "auto" : undefined }} >
+
+                        {title && <SectionHeader isExpanded={effectiveExpanded}>{title}</SectionHeader>}
+                        <ul className={styles.itemList}>
+                            {items.map((item) => (
+                                <SidebarLink key={item.href} item={item} pathname={pathname} isExpanded={effectiveExpanded} />
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        </motion.aside>
+    );
+}
+
+function SidebarLink({ item, pathname, isExpanded, }: { item: NavItem; pathname: string; isExpanded: boolean; }) {
+    const Icon = item.icon;
+    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+    return (
+        <li>
+            <Link href={item.href} className={styles.itemLink} title={!isExpanded ? item.label : undefined}>
+                <div className={`${styles.itemContent} ${isActive ? styles.itemActive : ""}`}>
+                    <Icon size={18} className={styles.itemIcon} />
+                    <AnimatedLabel isExpanded={isExpanded}>
+                        {item.label}
+                    </AnimatedLabel>
+                </div>
+            </Link>
+        </li>
+    );
+}
+
+function AnimatedLabel({ isExpanded, children }: { isExpanded: boolean; children: React.ReactNode }) {
+    return (
+        <motion.span
+            initial={false}
+            animate={{ opacity: isExpanded ? 1 : 0, width: isExpanded ? "auto" : 0 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+            className={styles.itemLabel}
+            style={{ pointerEvents: isExpanded ? "auto" : "none" }} >
+
+            {children}
+        </motion.span>
+    );
+}
+
+function SectionHeader({ isExpanded, children }: { isExpanded: boolean; children: React.ReactNode }) {
+    return (
         <motion.div
             initial={false}
             animate={{
@@ -73,95 +149,11 @@ export default function SidePanel({ isExpanded, setIsExpanded }: SidePanelProps)
                 padding: isExpanded ? "6px 10px 4px 10px" : "0px",
             }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            style={{ overflow: "hidden" }}
-            className={styles.sidebarSectionHeader} >
+            className={styles.sectionHeader} >
 
-            <span className={styles.sidebarSectionTitle}>{title}</span>
+            <span className={styles.sectionTitle}>
+                {children}
+            </span>
         </motion.div>
-    );
-
-    return (
-        <motion.aside
-            initial={false}
-            animate={{ width: isExpanded ? 200 : 66 }}
-            style={{
-                width: isExpanded ? 200 : 66,
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                flexShrink: 0,
-                overflow: "hidden",
-            }}
-            transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }} >
-
-            <div className={styles.sidebar}>
-                <div className={styles.sidebarGroupCard}>
-                    <button
-                        type="button"
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
-                            width: "100%",
-                        }}
-                        aria-label="Expandir o colapsar menú lateral" >
-
-                        <div className={styles.sidebarItemContent}>
-                            <Menu size={18} className={styles.sidebarIcon} />
-                            <motion.span
-                                initial={false}
-                                animate={{ opacity: isExpanded ? 1 : 0, width: isExpanded ? "auto" : 0 }}
-                                transition={{ duration: 0.15, ease: "easeInOut" }}
-                                className={styles.sidebarText}
-                                style={{ pointerEvents: isExpanded ? "auto" : "none", overflow: "hidden" }} >
-
-                                Menú
-                            </motion.span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
-            <div
-                className={styles.sidebar}
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flex: 1,
-                    gap: "8px",
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                }} >
-
-                <div className={styles.sidebarGroupCard} style={{ gap: isExpanded ? "4px" : "0px" }}>
-                    {renderSectionHeader("General")}
-                    <ul className={styles.sidebarList}>
-                        {generalSection.map(renderSidebarItem)}
-                    </ul>
-                </div>
-
-                <div className={styles.sidebarGroupCard} style={{ gap: isExpanded ? "4px" : "0px" }}>
-                    {renderSectionHeader("Gestión")}
-                    <ul className={styles.sidebarList}>
-                        {managementSection.map(renderSidebarItem)}
-                    </ul>
-                </div>
-
-                <div className={styles.sidebarGroupCard} style={{ gap: isExpanded ? "4px" : "0px" }}>
-                    {renderSectionHeader("Sistema")}
-                    <ul className={styles.sidebarList}>
-                        {systemSection.map(renderSidebarItem)}
-                    </ul>
-                </div>
-
-                <div className={styles.sidebarGroupCard} style={{ marginTop: "auto", gap: isExpanded ? "4px" : "0px" }}>
-                    <ul className={styles.sidebarList}>
-                        {configSection.map(renderSidebarItem)}
-                    </ul>
-                </div>
-            </div>
-        </motion.aside>
     );
 }

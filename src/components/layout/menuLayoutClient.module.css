@@ -1,0 +1,33 @@
+.shell {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    padding: 16px;
+    gap: 16px;
+    box-sizing: border-box;
+}
+
+.mainColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    gap: 16px;
+}
+
+.contentArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.pageTransition {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}

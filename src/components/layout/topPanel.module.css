@@ -1,0 +1,142 @@
+.topBarWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
+    align-items: center;
+}
+
+.topHeaderCard {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    z-index: 50;
+}
+
+.pageTitleCard {
+    background-color: #f3efe6;
+    border: 1px solid #dcd6c7;
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 46px;
+    box-sizing: border-box;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.pageTitleIcon {
+    color: #4b5563;
+    flex-shrink: 0;
+}
+
+.pageTitleText {
+    font-size: 13px;
+    font-weight: 500;
+    color: #636965;
+    white-space: nowrap;
+}
+
+.dateTimeText {
+    font-size: 13px;
+    font-weight: 500;
+    color: #636965;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.dateTimeSeparator {
+    margin: 0 8px;
+    color: #dcd6c7;
+    font-weight: 300;
+}
+
+.userCard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: max-content;
+    flex: 0 0 auto;
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.avatar {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    border-radius: 8px;
+    background-color: #f5f2eb;
+    color: #2b2b2b;
+    border: 1px solid #e3decb;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    line-height: 1.2;
+}
+
+.userName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+}
+
+.userRole {
+    font-size: 10px;
+    color: #808682;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.logoutForm {
+    display: flex;
+    align-items: center;
+    margin-left: 24px;
+}
+
+.logoutButton {
+    background: #fcf5f4;
+    border: 1px solid #f2d3cf;
+    color: #c95d53;
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.logoutButton:hover {
+    background-color: #c95d53;
+    color: #fcfbf9;
+}
