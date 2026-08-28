@@ -73,7 +73,7 @@ function useLiveDateTime() {
         const timer = setInterval(update, 1000);
         return () => clearInterval(timer);
     },
-        []);
+    []);
 
     return dateTime;
 }
@@ -93,7 +93,6 @@ export default function TopPanel({ user }: TopPanelProps) {
             <header className={styles.topHeaderCard}>
                 <div className={styles.pageTitleCard}>
                     <Icon size={18} className={styles.pageTitleIcon} />
-
                     <span className={styles.pageTitleText}>
                         {title}
                     </span>
@@ -101,7 +100,6 @@ export default function TopPanel({ user }: TopPanelProps) {
 
                 <div className={styles.pageTitleCard}>
                     <Clock size={16} className={styles.pageTitleIcon} />
-
                     <span className={styles.dateTimeText}>
                         {
                             date ? (

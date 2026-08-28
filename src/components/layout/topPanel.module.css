@@ -76,10 +76,10 @@
 }
 
 .avatar {
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
-    min-height: 46px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 8px;
     background-color: #f5f2eb;
     color: #2b2b2b;
@@ -98,6 +98,7 @@
     justify-content: center;
     gap: 1px;
     line-height: 1.2;
+    min-width: 0;
 }
 
 .userName {
@@ -105,6 +106,8 @@
     font-weight: 600;
     color: #1f2937;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .userRole {
@@ -112,6 +115,8 @@
     color: #808682;
     letter-spacing: 0.04em;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .logoutForm {
@@ -124,8 +129,10 @@
     background: #fcf5f4;
     border: 1px solid #f2d3cf;
     color: #c95d53;
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -139,4 +146,28 @@
 .logoutButton:hover {
     background-color: #c95d53;
     color: #fcfbf9;
+}
+
+@media (max-width: 768px) {
+    .topBarWrapper {
+        gap: 10px;
+    }
+
+    .topHeaderCard {
+        width: 100%;
+    }
+
+    .userCard {
+        display: none;
+    }
+
+    .dateTimeText {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .pageTitleText {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }

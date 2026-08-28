@@ -31,7 +31,7 @@ export default function MenuLayoutClient({ children, user, initialExpanded }: Me
 
     return (
         <div className={styles.shell}>
-            <SidePanel isExpanded={isExpanded} setIsExpanded={handleToggle} />
+            <SidePanel user={user} isExpanded={isExpanded} setIsExpanded={handleToggle} />
 
             <div className={styles.mainColumn}>
                 <TopPanel user={user} />
