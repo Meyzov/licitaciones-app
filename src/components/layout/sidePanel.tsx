@@ -42,20 +42,15 @@ const NAV_SECTIONS: Array<{ title: string | null; items: NavItem[] }> = [
 
 export default function SidePanel({ isExpanded, setIsExpanded }: SidePanelProps) {
     const pathname = usePathname();
-    const [isAndroid, setIsAndroid] = useState(false);
 
-    useEffect(() => {
+    const [isAndroid] = useState(() => {
+        if (typeof window === "undefined") return false;
         const userAgent = String(navigator.userAgent || navigator.vendor || (window as unknown as { opera?: string }).opera || "");
-
-        if (/android/i.test(userAgent)) {
-            queueMicrotask(() => {
-                setIsAndroid(true);
-                setIsExpanded(false);
-            });
-        }
-    }, [setIsExpanded]);
+        return /android/i.test(userAgent);
+    });
 
     const effectiveExpanded = isAndroid ? false : isExpanded;
+
     const handleToggle = () => {
         if (isAndroid) return;
         setIsExpanded(!isExpanded);
