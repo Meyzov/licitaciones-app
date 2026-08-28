@@ -1,0 +1,419 @@
+.baseCard {
+    background-color: #f3efe6;
+    border-radius: 12px;
+    border: 1px solid #dcd6c7;
+    padding: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.secondaryCard {
+    background: #fcfbf9;
+    border-radius: 12px;
+    border: 1px solid #ded9cb;
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 16px;
+    display: flex;
+    flex: 1 1 300px;
+    min-width: 280px;
+    overflow: hidden;
+}
+
+.titleCard,
+.button {
+    background-color: #f3efe6;
+    font-weight: 500;
+    color: #2c302e;
+    border: 1px solid #dcd6c7;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+.button {
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.button:hover {
+    background-color: #dfd8cb;
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.cardHeader {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.tableCard {
+    background-color: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 10px;
+    box-sizing: border-box;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 1.6fr 2fr 120px;
+    gap: 16px;
+    padding: 12px 20px;
+    background-color: #f3efe6;
+    flex-shrink: 0;
+    border-bottom: 1px solid #ded9cb;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3b3730;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.userList {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.userRow {
+    display: grid;
+    grid-template-columns: 1.6fr 2fr 120px;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0ece2;
+    transition: background-color 0.12s ease;
+}
+
+.userRow:hover {
+    background-color: #faf8f3;
+}
+
+.userList .userRow:last-child {
+    border-bottom: none;
+}
+
+.userIdentity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+    background-color: #e8e3d5;
+    border: 1px solid #dcd6c7;
+    color: #2c302e;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.userName {
+    font-size: 13.5px;
+    line-height: 1.4;
+    font-weight: 600;
+    color: #2c302e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userEmail {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #6e7471;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    padding-bottom: 1px;
+}
+
+.alignRight {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    white-space: nowrap;
+}
+
+.badge_admin {
+    background-color: #e4efe4;
+    color: #325232;
+}
+
+.badge_user {
+    background-color: #e5edf4;
+    color: #2e4a63;
+}
+
+.formCard {
+    background: #fcfbf9;
+    border-radius: 12px;
+    border: 1px solid #ded9cb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    width: 100%;
+    flex-direction: column;
+    display: flex;
+    overflow: hidden;
+    min-height: 0;
+    flex: 1;
+}
+
+.formContainer {
+    padding: 32px;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3b3730;
+}
+
+.formInput {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #dcd6c7;
+    font-size: 14px;
+    outline: none;
+    background-color: #f4f0e6;
+    color: #2c302e;
+    cursor: text;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.formInput:focus {
+    border-color: #b3a995;
+    background-color: #f7f3ec;
+    box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
+}
+
+.customSelectWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.customSelectTrigger {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #dcd6c7;
+    font-size: 14px;
+    background-color: #f4f0e6;
+    color: #2c302e;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.customSelectTrigger:hover {
+    border-color: #b3a995;
+    background-color: #f7f3ec;
+}
+
+.customDropdownList {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    background-color: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.customDropdownItem {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #2c302e;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.customDropdownItem:hover {
+    background-color: #f3efe6;
+}
+
+.customDropdownItem.selected {
+    font-weight: 600;
+    background-color: #f7f3ec;
+}
+
+.cancelButton {
+    background-color: #f3efe6;
+    color: #3b3730;
+    border: 1px solid #dcd6c7;
+}
+
+.cancelButton:hover {
+    background-color: #dfd8cb;
+}
+
+@keyframes slideDownStagger {
+    0% {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animatedRow {
+    opacity: 0;
+    animation: slideDownStagger 0.35s ease-out forwards;
+    animation-delay: calc(var(--index) * 0.06s);
+}
+
+@media (max-width: 640px) {
+    .baseCard {
+        height: auto;
+        min-height: auto;
+    }
+
+    .formActions {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .formActions button {
+        width: 100%;
+    }
+
+    .tableCard {
+        overflow: hidden;
+    }
+
+    .tableHeader {
+        display: none;
+    }
+
+    .userList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .userRow {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        border: 1px solid #ede8db;
+        border-bottom-width: 1px;
+        border-radius: 10px;
+        padding: 14px;
+        background-color: #fcfbf9;
+    }
+
+    .userList .userRow:last-child {
+        border-bottom: 1px solid #ede8db;
+    }
+
+    .userRow:hover {
+        background-color: #fcfbf9;
+    }
+
+    .userEmail {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    .alignRight {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
