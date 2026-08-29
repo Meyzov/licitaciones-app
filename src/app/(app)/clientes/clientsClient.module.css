@@ -170,7 +170,7 @@
     line-height: 1.4;
     font-weight: 600;
     color: #2c302e;
-    white-space: nowrap;
+    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -179,7 +179,7 @@
     font-size: 13px;
     line-height: 1.4;
     color: #6e7471;
-    white-space: nowrap;
+    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
