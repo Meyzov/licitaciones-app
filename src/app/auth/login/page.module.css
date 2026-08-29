@@ -124,15 +124,23 @@
     position: fixed;
     top: 24px;
     left: 50%;
-    transform: translateX(-50%);
-    background-color: #842029;
-    color: #fff;
     padding: 12px 20px;
     border-radius: 8px;
     font-size: 13px;
+    font-weight: 500;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast_success {
+    background-color: #dbeee0;
+    color: #235d36;
+}
+
+.toast_error {
+    background-color: #f5d6d8;
+    color: #842029;
 }
 
 @keyframes slideDown {

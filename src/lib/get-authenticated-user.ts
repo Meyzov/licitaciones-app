@@ -9,12 +9,13 @@ export async function getAuthenticatedUser() {
 
     const dbUser = await prisma.usuario.findUnique({
         where: { id: user.id },
-        select: { nombre: true, email: true, rol: true },
+        select: { id: true, nombre: true, email: true, rol: true },
     });
 
     if (!dbUser) return null;
 
     return {
+        id: dbUser.id,
         name: dbUser.nombre,
         email: dbUser.email,
         role: dbUser.rol,

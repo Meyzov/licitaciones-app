@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore, useRef, useEffect } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
+import { useToast } from "@/lib/useToast";
 import styles from "./usersClient.module.css";
 
 type User = {
@@ -58,6 +59,7 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
     const isMounted = useIsMounted();
     const [isRoleOpen, setIsRoleOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { toast, showToast } = useToast();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -105,17 +107,25 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                 password: "",
                 role: "user",
             });
+
             setIsCreating(false);
             await refreshUsers();
             setAnimKey((prev) => prev + 1);
+            showToast("Usuario creado exitosamente", "success");
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-            alert(errorMessage);
+            showToast(errorMessage, "error");
         }
     };
 
     return (
         <div className={styles.baseCard}>
+            {toast && (
+                <div key={toast.id} className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
+                    {toast.message}
+                </div>
+            )}
+
             <div className={styles.secondaryCard}>
                 <div className={styles.cardHeader}>
                     {isCreating ? (

@@ -1,9 +1,13 @@
-import styles from "./page.module.css";
+import { redirect } from "next/navigation";
+import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
+import ClientsClient from "./clientsClient";
 
-export default function ClientesPage() {
-    return (
-        <div className={styles.card}>
-            <h1>Clientes</h1>
-        </div>
-    );
+export default async function ClientsPage() {
+    const currentUser = await getAuthenticatedUser();
+
+    if (!currentUser) {
+        redirect("/auth/login");
+    }
+
+    return <ClientsClient />;
 }

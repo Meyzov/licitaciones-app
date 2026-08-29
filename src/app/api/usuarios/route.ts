@@ -10,7 +10,15 @@ const supabaseAdmin = createClient(
 
 export async function GET() {
     try {
-        const usuarios = await prisma.usuario.findMany({
+        const currentUser = await getAuthenticatedUser();
+        if (!currentUser) {
+            return NextResponse.json(
+                { error: "No autorizado. Inicia sesión para continuar." },
+                { status: 401 }
+            );
+        }
+
+        const users = await prisma.usuario.findMany({
             select: {
                 id: true,
                 nombre: true,
@@ -22,7 +30,7 @@ export async function GET() {
             },
         });
 
-        return NextResponse.json(usuarios, { status: 200 });
+        return NextResponse.json(users, { status: 200 });
 
     } catch (error: unknown) {
         console.error("Error al obtener los usuarios:", error);
@@ -87,6 +95,9 @@ export async function POST(request: Request) {
                 nombre: name,
                 rol: role || "user",
             },
+        }).catch(async (dbError) => {
+            await supabaseAdmin.auth.admin.deleteUser(authUser.user.id);
+            throw dbError;
         });
 
         return NextResponse.json(

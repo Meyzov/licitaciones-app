@@ -18,40 +18,6 @@
     overflow: hidden;
 }
 
-.toast {
-    position: fixed;
-    top: 24px;
-    left: 50%;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.toast_success {
-    background-color: #dbeee0;
-    color: #235d36;
-}
-
-.toast_error {
-    background-color: #f5d6d8;
-    color: #842029;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -16px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
 .secondaryCard {
     background: #fcfbf9;
     border-radius: 12px;
@@ -113,7 +79,7 @@
 .headerLeft {
     display: flex;
     align-items: center;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
     gap: 16px;
 }
 
@@ -130,7 +96,7 @@
 
 .tableHeader {
     display: grid;
-    grid-template-columns: 1.6fr 2fr 120px;
+    grid-template-columns: 1.4fr 1.8fr 1fr 1fr 120px;
     gap: 16px;
     padding: 12px 20px;
     background-color: #f3efe6;
@@ -143,16 +109,24 @@
     letter-spacing: 0.04em;
 }
 
-.userList {
+.clientList {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     min-height: 0;
 }
 
-.userRow {
+.metaText {
+    font-size: 12.5px;
+    color: #7a7568;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.clientRow {
     display: grid;
-    grid-template-columns: 1.6fr 2fr 120px;
+    grid-template-columns: 1.4fr 1.8fr 1fr 1fr 120px;
     align-items: center;
     gap: 16px;
     padding: 14px 20px;
@@ -160,15 +134,15 @@
     transition: background-color 0.12s ease;
 }
 
-.userRow:hover {
+.clientRow:hover {
     background-color: #faf8f3;
 }
 
-.userList .userRow:last-child {
+.clientList .clientRow:last-child {
     border-bottom: none;
 }
 
-.userIdentity {
+.clientIdentity {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -191,7 +165,7 @@
     flex-shrink: 0;
 }
 
-.userName {
+.clientName {
     font-size: 13.5px;
     line-height: 1.4;
     font-weight: 600;
@@ -201,7 +175,7 @@
     text-overflow: ellipsis;
 }
 
-.userEmail {
+.clientEmail {
     font-size: 13px;
     line-height: 1.4;
     color: #6e7471;
@@ -217,25 +191,10 @@
     justify-content: flex-end;
 }
 
-.badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+.dateText {
+    font-size: 12.5px;
+    color: #7a7568;
     white-space: nowrap;
-}
-
-.badge_admin {
-    background-color: #e4efe4;
-    color: #325232;
-}
-
-.badge_user {
-    background-color: #e5edf4;
-    color: #2e4a63;
 }
 
 .formCard {
@@ -303,65 +262,6 @@
     box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
 }
 
-.customSelectWrapper {
-    position: relative;
-    width: 100%;
-}
-
-.customSelectTrigger {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid #dcd6c7;
-    font-size: 14px;
-    background-color: #f4f0e6;
-    color: #2c302e;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.customSelectTrigger:hover {
-    border-color: #b3a995;
-    background-color: #f7f3ec;
-}
-
-.customDropdownList {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    width: 100%;
-    background-color: #fcfbf9;
-    border: 1px solid #ded9cb;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.customDropdownItem {
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #2c302e;
-    cursor: pointer;
-    transition: background-color 0.15s;
-}
-
-.customDropdownItem:hover {
-    background-color: #f3efe6;
-}
-
-.customDropdownItem.selected {
-    font-weight: 600;
-    background-color: #f7f3ec;
-}
-
 .cancelButton {
     background-color: #f3efe6;
     color: #3b3730;
@@ -370,6 +270,40 @@
 
 .cancelButton:hover {
     background-color: #dfd8cb;
+}
+
+.toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast_success {
+    background-color: #dbeee0;
+    color: #235d36;
+}
+
+.toast_error {
+    background-color: #f5d6d8;
+    color: #842029;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -16px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 @keyframes slideDownStagger {
@@ -412,34 +346,33 @@
         display: none;
     }
 
-    .userList {
+    .clientList {
         display: flex;
         flex-direction: column;
         gap: 10px;
         padding: 14px;
     }
 
-    .userRow {
+    .clientRow {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
         border: 1px solid #ede8db;
-        border-bottom-width: 1px;
         border-radius: 10px;
         padding: 14px;
         background-color: #fcfbf9;
     }
 
-    .userList .userRow:last-child {
+    .clientList .clientRow:last-child {
         border-bottom: 1px solid #ede8db;
     }
 
-    .userRow:hover {
+    .clientRow:hover {
         background-color: #fcfbf9;
     }
 
-    .userEmail {
+    .clientEmail {
         white-space: normal;
         overflow: visible;
         text-overflow: unset;
