@@ -57,6 +57,25 @@ const formatDate = (isoDate: string) => {
     });
 };
 
+function RefreshIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            <polyline points="23 4 23 10 17 10" />
+            <polyline points="1 20 1 14 7 14" />
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+        </svg>
+    );
+}
+
 export default function ClientsClient() {
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
@@ -103,96 +122,107 @@ export default function ClientsClient() {
     };
 
     return (
-        <div className={styles.baseCard}>
+        <div className={styles.secondaryCard}>
             {toast && (
                 <div key={toast.id} className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
                     {toast.message}
                 </div>
             )}
 
-            <div className={styles.secondaryCard}>
-                <div className={styles.cardHeader}>
-                    {isCreating ? (
+            <div className={styles.cardHeader}>
+                {isCreating ? (
+                    <div className={styles.headerLeft}>
+                        <button className={styles.button} onClick={() => setIsCreating(false)}>
+                            ← Volver
+                        </button>
+                        <div className={styles.titleCard}>Nuevo cliente</div>
+                    </div>
+                ) : (
+                    <>
                         <div className={styles.headerLeft}>
-                            <button className={styles.button} onClick={() => setIsCreating(false)}>
-                                ← Volver
-                            </button>
-                            <div className={styles.titleCard}>Nuevo cliente</div>
-                        </div>
-                    ) : (
-                        <>
-                            <div className={styles.headerLeft}>
-                                <div className={styles.titleCard}>Listado de clientes</div>
-                                <button className={styles.button} onClick={handleRefresh} disabled={isLoadingState}>
+                            <div className={styles.titleCard}>Listado de clientes</div>
+                            <button
+                                className={styles.button}
+                                onClick={handleRefresh}
+                                disabled={isLoadingState}
+                                title={isLoadingState ? "Cargando..." : "Refrescar"}
+                            >
+                                <RefreshIcon
+                                    className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""}`}
+                                />
+                                <span className={styles.refreshButtonText}>
                                     {isLoadingState ? "Cargando..." : "Refrescar"}
-                                </button>
+                                </span>
+                            </button>
+                        </div>
+
+                        <button className={styles.button} onClick={() => setIsCreating(true)}>
+                            + Nuevo cliente
+                        </button>
+                    </>
+                )}
+            </div>
+
+            {isCreating ? (
+                <>
+                    <div className={styles.formCard}>
+                        <form
+                            id="client-form"
+                            onSubmit={handleSubmitClient}
+                            className={styles.formContainer} >
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Nombre del cliente</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    placeholder="Ej. Constructora Delta"
+                                    className={styles.formInput}
+                                    required />
                             </div>
 
-                            <button className={styles.button} onClick={() => setIsCreating(true)}>
-                                + Nuevo cliente
-                            </button>
-                        </>
-                    )}
-                </div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Correo electrónico</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder="contacto@empresa.com"
+                                    className={styles.formInput}
+                                    required />
+                            </div>
+                        </form>
+                    </div>
 
-                {isCreating ? (
-                    <>
-                        <div className={styles.formCard}>
-                            <form
-                                id="client-form"
-                                onSubmit={handleSubmitClient}
-                                className={styles.formContainer} >
-                                <div className={styles.formGroup}>
-                                    <label className={styles.formLabel}>Nombre del cliente</label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        placeholder="Ej. Constructora Delta"
-                                        className={styles.formInput}
-                                        required />
-                                </div>
-
-                                <div className={styles.formGroup}>
-                                    <label className={styles.formLabel}>Correo electrónico</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        placeholder="contacto@empresa.com"
-                                        className={styles.formInput}
-                                        required />
-                                </div>
-                            </form>
-                        </div>
-
-                        <div className={styles.formActions}>
-                            <button
-                                type="button"
-                                className={`${styles.button} ${styles.cancelButton}`}
-                                onClick={() => setIsCreating(false)}
-                                disabled={isMutating} >
-                                Cancelar
-                            </button>
-                            <button
-                                type="submit"
-                                form="client-form"
-                                className={styles.button}
-                                disabled={isMutating} >
-                                {isMutating ? "Guardando..." : "Guardar cliente"}
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <div className={styles.tableCard}>
+                    <div className={styles.formActions}>
+                        <button
+                            type="button"
+                            className={`${styles.button} ${styles.cancelButton}`}
+                            onClick={() => setIsCreating(false)}
+                            disabled={isMutating} >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            form="client-form"
+                            className={styles.button}
+                            disabled={isMutating} >
+                            {isMutating ? "Guardando..." : "Guardar cliente"}
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <div className={styles.tableCard}>
+                    <div className={styles.tableScrollWrapper}>
                         <div className={styles.tableHeader} role="row">
                             <span>Nombre</span>
                             <span>Email</span>
-                            <span>Creado por</span>
                             <span>Modificado por</span>
-                            <span className={styles.alignRight}>Registrado</span>
+                            <span>Modificado el</span>
+                            <span>Creado por</span>
+                            <span>Creado el</span>
                         </div>
 
                         <div key={animKey} className={styles.clientList}>
@@ -202,30 +232,44 @@ export default function ClientsClient() {
                                     className={`${styles.clientRow} ${styles.animatedRow}`}
                                     role="row"
                                     style={{ "--index": index } as React.CSSProperties} >
-                                    <div className={styles.clientIdentity}>
-                                        <span className={styles.avatar}>
-                                            {client.nombre.charAt(0).toUpperCase()}
-                                        </span>
-                                        <span className={styles.clientName}>{client.nombre}</span>
+                                    <div className={styles.cellNombre}>
+                                        <div className={styles.clientIdentity}>
+                                            <span className={styles.avatar}>
+                                                {client.nombre.charAt(0).toUpperCase()}
+                                            </span>
+                                            <span className={styles.clientName}>{client.nombre}</span>
+                                        </div>
                                     </div>
 
-                                    <span className={styles.clientEmail}>{client.email}</span>
+                                    <div className={styles.cellEmail}>
+                                        <span className={styles.clientEmail}>{client.email}</span>
+                                    </div>
 
-                                    <span className={styles.metaText}>{client.creador.nombre}</span>
+                                    <div className={styles.cellModificadoPor}>
+                                        <span className={styles.metaText}>
+                                            {client.modificador ? client.modificador.nombre : "No modificado"}
+                                        </span>
+                                    </div>
 
-                                    <span className={styles.metaText}>
-                                        {client.modificador ? client.modificador.nombre : "No modificado"}
-                                    </span>
+                                    <div className={styles.cellModificadoEl}>
+                                        <span className={styles.metaText}>
+                                            {client.updatedAt ? formatDate(client.updatedAt) : "Sin modificar"}
+                                        </span>
+                                    </div>
 
-                                    <div className={styles.alignRight}>
+                                    <div className={styles.cellCreadoPor}>
+                                        <span className={styles.metaText}>{client.creador.nombre}</span>
+                                    </div>
+
+                                    <div className={styles.cellCreadoEl}>
                                         <span className={styles.dateText}>{formatDate(client.createdAt)}</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

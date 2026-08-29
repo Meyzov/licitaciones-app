@@ -7,23 +7,6 @@
     background: transparent;
 }
 
-@media (max-width: 768px) {
-    .asideWrapper {
-        position: fixed !important;
-        top: 16px;
-        left: 16px;
-        bottom: 16px;
-        height: calc(100vh - 32px);
-        z-index: 1100;
-        width: 200px !important;
-        border-radius: 14px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-        transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        background: rgba(0, 0, 0, 0.1);
-    }
-}
-
 .sidebarPanel {
     background: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -46,7 +29,7 @@
 .sidebarGroupCard {
     background-color: #f3efe6;
     border: 1px solid #dcd6c7;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 4px;
     display: flex;
     flex-direction: column;
@@ -103,15 +86,16 @@
     align-items: center;
     gap: 12px;
     padding: 9px 10px;
-    border-radius: 6px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 500;
-    color: #636965;
+    color: #5c5548;
     transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     white-space: nowrap;
     overflow: hidden;
     width: 100%;
     box-sizing: border-box;
+    line-height: 1.5;
 }
 
 .itemContentNoGap {
@@ -120,13 +104,13 @@
 
 .itemContent:hover {
     background-color: #fcfbf9;
-    color: #2c302e;
+    color: #4a453d;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .itemActive {
     background-color: #fcfbf9;
-    color: #2c302e;
+    color: #4a453d;
     font-weight: 600;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
@@ -150,11 +134,12 @@
 .sectionTitle {
     font-size: 10px;
     font-weight: 700;
-    color: #808682;
+    color: #a8a090;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     white-space: nowrap;
     overflow: hidden;
+    line-height: 1.5;
 }
 
 .avatar {
@@ -162,16 +147,17 @@
     height: 44px;
     min-width: 44px;
     min-height: 44px;
-    border-radius: 8px;
-    background-color: #f5f2eb;
-    color: #2b2b2b;
-    border: 1px solid #e3decb;
+    border-radius: 12px;
+    background-color: #e8e3d5;
+    color: #5c5548;
+    border: 1px solid #dcd6c7;
     font-weight: 700;
     font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    line-height: 1;
 }
 
 .userInfo {
@@ -179,7 +165,7 @@
     flex-direction: column;
     justify-content: center;
     gap: 1px;
-    line-height: 1.2;
+    line-height: 1.5;
     overflow: hidden;
     flex: 1;
     min-width: 0;
@@ -188,19 +174,21 @@
 .userName {
     font-size: 12px;
     font-weight: 600;
-    color: #1f2937;
+    color: #5c5548;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.5;
 }
 
 .userRole {
     font-size: 9px;
-    color: #808682;
+    color: #8a8375;
     letter-spacing: 0.04em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.5;
 }
 
 .logoutForm {
@@ -217,7 +205,7 @@
     height: 44px;
     min-width: 44px;
     min-height: 44px;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -234,6 +222,27 @@
 
 .mobileFloatingTrigger {
     display: none;
+}
+
+.mobileBackdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+    touch-action: manipulation;
+}
+
+.sidebarPanelPerfil {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -259,26 +268,6 @@
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         overflow: hidden;
         transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        background: transparent;
     }
-}
-
-.mobileBackdrop {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1050;
-    touch-action: manipulation;
-}
-
-.sidebarPanelPerfil {
-    background: #fcfbf9;
-    border: 1px solid #ded9cb;
-    border-radius: 12px;
-    padding: 8px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-    flex-shrink: 0;
-    overflow: hidden;
 }

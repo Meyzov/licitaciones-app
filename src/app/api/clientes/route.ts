@@ -5,10 +5,11 @@ import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
 export async function GET() {
     try {
         const currentUser = await getAuthenticatedUser();
+
         if (!currentUser) {
             return NextResponse.json(
                 { error: "No autorizado. Inicia sesión para continuar." },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -20,10 +21,14 @@ export async function GET() {
                 createdAt: true,
                 updatedAt: true,
                 creador: {
-                    select: { nombre: true },
+                    select: {
+                        nombre: true,
+                    },
                 },
                 modificador: {
-                    select: { nombre: true },
+                    select: {
+                        nombre: true,
+                    },
                 },
             },
             orderBy: {
@@ -32,14 +37,12 @@ export async function GET() {
         });
 
         return NextResponse.json(clients, { status: 200 });
-
-    } catch (error: unknown) {
-        console.error("Error fetching clients:", error);
-        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
+    } catch (error) {
+        console.error("Error al obtener los clientes:", error);
 
         return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
+            { error: "Error interno del servidor." },
+            { status: 500 },
         );
     }
 }
@@ -47,50 +50,63 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const currentUser = await getAuthenticatedUser();
+
         if (!currentUser) {
             return NextResponse.json(
                 { error: "No autorizado. Inicia sesión para continuar." },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
         const body = await request.json();
         const { name, email } = body;
 
-        if (!name || !email) {
+        if (
+            typeof name !== "string" ||
+            typeof email !== "string"
+        ) {
             return NextResponse.json(
-                { error: "Faltan campos obligatorios (nombre, email)." },
-                { status: 400 }
+                { error: "Nombre y email son obligatorios." },
+                { status: 400 },
+            );
+        }
+
+        const normalizedName = name.trim();
+        const normalizedEmail = email.trim().toLowerCase();
+
+        if (!normalizedName || !normalizedEmail) {
+            return NextResponse.json(
+                { error: "Nombre y email son obligatorios." },
+                { status: 400 },
             );
         }
 
         const newClient = await prisma.cliente.create({
             data: {
-                nombre: name,
-                email,
+                nombre: normalizedName,
+                email: normalizedEmail,
                 createdBy: currentUser.id,
+                updatedAt: null
             },
         });
 
         return NextResponse.json(
             {
-                message: "Cliente creado exitosamente",
+                message: "Cliente creado exitosamente.",
                 client: {
                     id: newClient.id,
                     name: newClient.nombre,
                     email: newClient.email,
                 },
             },
-            { status: 201 }
+            { status: 201 },
         );
-
-    } catch (error: unknown) {
-        console.error("Error creating client:", error);
-        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
+    } catch (error) {
+        console.error("Error al crear el cliente:", error);
 
         return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
+            { error: "Error interno del servidor." },
+            { status: 500 },
         );
     }
 }

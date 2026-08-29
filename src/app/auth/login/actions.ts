@@ -7,11 +7,22 @@ import { createClient } from "@/lib/supabase/server";
 export async function loginAction(formData: FormData) {
     const supabase = await createClient();
 
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    if (
+        typeof email !== "string" ||
+        typeof password !== "string" ||
+        !email.trim() ||
+        !password
+    ) {
+        return {
+            error: "Correo o contraseña incorrectos",
+        };
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password,
     });
 

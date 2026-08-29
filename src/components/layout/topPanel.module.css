@@ -25,7 +25,7 @@
 .pageTitleCard {
     background-color: #f3efe6;
     border: 1px solid #dcd6c7;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 6px 12px;
     display: flex;
     align-items: center;
@@ -37,23 +37,25 @@
 }
 
 .pageTitleIcon {
-    color: #4b5563;
+    color: #5c5548;
     flex-shrink: 0;
 }
 
 .pageTitleText {
     font-size: 13px;
     font-weight: 500;
-    color: #636965;
+    color: #5c5548;
     white-space: nowrap;
+    line-height: 1.5;
 }
 
 .dateTimeText {
     font-size: 13px;
     font-weight: 500;
-    color: #636965;
+    color: #5c5548;
     text-transform: capitalize;
     white-space: nowrap;
+    line-height: 1.5;
 }
 
 .dateTimeSeparator {
@@ -80,16 +82,17 @@
     height: 44px;
     min-width: 44px;
     min-height: 44px;
-    border-radius: 8px;
-    background-color: #f5f2eb;
-    color: #2b2b2b;
-    border: 1px solid #e3decb;
+    border-radius: 12px;
+    background-color: #e8e3d5;
+    color: #5c5548;
+    border: 1px solid #dcd6c7;
     font-weight: 700;
     font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    line-height: 1;
 }
 
 .userInfo {
@@ -97,26 +100,28 @@
     flex-direction: column;
     justify-content: center;
     gap: 1px;
-    line-height: 1.2;
+    line-height: 1.5;
     min-width: 0;
 }
 
 .userName {
     font-size: 14px;
     font-weight: 600;
-    color: #1f2937;
+    color: #5c5548;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.5;
 }
 
 .userRole {
     font-size: 10px;
-    color: #808682;
+    color: #8a8375;
     letter-spacing: 0.04em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.5;
 }
 
 .logoutForm {
@@ -133,7 +138,7 @@
     height: 44px;
     min-width: 44px;
     min-height: 44px;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -10,7 +10,7 @@ CREATE TABLE "usuarios" (
     "email" TEXT NOT NULL,
     "nombre" TEXT NOT NULL,
     "rol" "Rol" NOT NULL DEFAULT 'user',
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")
 );
@@ -20,9 +20,9 @@ CREATE TABLE "clientes" (
     "id" UUID NOT NULL,
     "nombre" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" UUID NOT NULL,
-    "updated_at" TIMESTAMP(3),
+    "updated_at" TIMESTAMPTZ,
     "updated_by" UUID,
 
     CONSTRAINT "clientes_pkey" PRIMARY KEY ("id")
@@ -33,13 +33,13 @@ CREATE TABLE "licitaciones" (
     "id" UUID NOT NULL,
     "cliente_id" UUID NOT NULL,
     "presupuesto_maximo" DECIMAL(12,2) NOT NULL,
-    "fecha_limite" TIMESTAMP(3) NOT NULL,
+    "fecha_limite" TIMESTAMPTZ NOT NULL,
     "estado" "EstadoLicitacion" NOT NULL DEFAULT 'borrador',
     "documento_propuesta_url" TEXT,
     "recordatorio_enviado" BOOLEAN NOT NULL DEFAULT false,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" UUID NOT NULL,
-    "updated_at" TIMESTAMP(3),
+    "updated_at" TIMESTAMPTZ,
     "updated_by" UUID,
 
     CONSTRAINT "licitaciones_pkey" PRIMARY KEY ("id")
@@ -50,9 +50,9 @@ CREATE TABLE "productos" (
     "id" UUID NOT NULL,
     "nombre" TEXT NOT NULL,
     "precio_base" DECIMAL(12,2) NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" UUID NOT NULL,
-    "updated_at" TIMESTAMP(3),
+    "updated_at" TIMESTAMPTZ,
     "updated_by" UUID,
 
     CONSTRAINT "productos_pkey" PRIMARY KEY ("id")
@@ -73,7 +73,7 @@ CREATE TABLE "pagos" (
     "id" UUID NOT NULL,
     "licitacion_id" UUID NOT NULL,
     "monto" DECIMAL(12,2) NOT NULL,
-    "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "fecha" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_by" UUID NOT NULL,
 
     CONSTRAINT "pagos_pkey" PRIMARY KEY ("id")
@@ -86,7 +86,7 @@ CREATE TABLE "historial_transicion" (
     "usuario_id" UUID NOT NULL,
     "estado_anterior" "EstadoLicitacion",
     "estado_nuevo" "EstadoLicitacion" NOT NULL,
-    "fecha_hora" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "fecha_hora" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "historial_transicion_pkey" PRIMARY KEY ("id")
 );

@@ -5,16 +5,17 @@ import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!
+    process.env.SUPABASE_SECRET_KEY!,
 );
 
 export async function GET() {
     try {
         const currentUser = await getAuthenticatedUser();
+
         if (!currentUser) {
             return NextResponse.json(
                 { error: "No autorizado. Inicia sesión para continuar." },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -31,14 +32,12 @@ export async function GET() {
         });
 
         return NextResponse.json(users, { status: 200 });
-
-    } catch (error: unknown) {
+    } catch (error) {
         console.error("Error al obtener los usuarios:", error);
-        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
 
         return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
+            { error: "Error interno del servidor." },
+            { status: 500 },
         );
     }
 }
@@ -46,80 +45,139 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const currentUser = await getAuthenticatedUser();
+
         if (!currentUser) {
             return NextResponse.json(
                 { error: "No autorizado. Inicia sesión para continuar." },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
         if (currentUser.role !== "admin") {
             return NextResponse.json(
                 { error: "Acceso denegado. Se requieren permisos de administrador." },
-                { status: 403 }
+                { status: 403 },
             );
         }
 
         const body = await request.json();
-        const {
-            name,
-            email,
-            password,
-            role
-        } = body;
+        const { name, email, password, role } = body;
 
-        if (!name || !email || !password) {
+        if (
+            typeof name !== "string" ||
+            typeof email !== "string" ||
+            typeof password !== "string"
+        ) {
             return NextResponse.json(
-                { error: "Faltan campos obligatorios (nombre, email, contraseña)." },
-                { status: 400 }
+                { error: "Nombre, email y contraseña son obligatorios." },
+                { status: 400 },
             );
         }
 
-        const { data: authUser, error } = await supabaseAdmin.auth.admin.createUser({
-            email,
+        const normalizedName = name.trim();
+        const normalizedEmail = email.trim().toLowerCase();
+
+        if (!normalizedName || !normalizedEmail || !password) {
+            return NextResponse.json(
+                { error: "Nombre, email y contraseña son obligatorios." },
+                { status: 400 },
+            );
+        }
+
+        if (password.length < 8) {
+            return NextResponse.json(
+                { error: "La contraseña debe tener al menos 8 caracteres." },
+                { status: 400 },
+            );
+        }
+
+        if (role !== undefined && role !== "admin" && role !== "user") {
+            return NextResponse.json(
+                { error: "El rol especificado no es válido." },
+                { status: 400 },
+            );
+        }
+
+        const selectedRole = role ?? "user";
+        const existingUser = await prisma.usuario.findUnique({
+            where: {
+                email: normalizedEmail,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (existingUser) {
+            return NextResponse.json(
+                { error: "Ya existe un usuario con ese correo electrónico." },
+                { status: 409 },
+            );
+        }
+
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+            email: normalizedEmail,
             password,
             email_confirm: true,
         });
 
-        if (error || !authUser.user) {
+        if (authError || !authData.user) {
+            console.error("Error creando usuario en Supabase Auth:", authError);
+
             return NextResponse.json(
-                { error: error?.message || "Error creando usuario en Supabase Auth" },
-                { status: 400 }
+                { error: "No se pudo crear el usuario en el sistema de autenticación.", },
+                { status: 400 },
             );
         }
 
-        const newDbUser = await prisma.usuario.create({
-            data: {
-                id: authUser.user.id,
-                email,
-                nombre: name,
-                rol: role || "user",
-            },
-        }).catch(async (dbError) => {
-            await supabaseAdmin.auth.admin.deleteUser(authUser.user.id);
+        try {
+            const newDbUser = await prisma.usuario.create({
+                data: {
+                    id: authData.user.id,
+                    email: normalizedEmail,
+                    nombre: normalizedName,
+                    rol: selectedRole,
+                },
+                select: {
+                    id: true,
+                    nombre: true,
+                    email: true,
+                    rol: true,
+                },
+            });
+
+            return NextResponse.json(
+                {
+                    message: "Usuario creado exitosamente.",
+                    user: {
+                        id: newDbUser.id,
+                        name: newDbUser.nombre,
+                        email: newDbUser.email,
+                        role: newDbUser.rol,
+                    },
+                },
+                { status: 201 },
+            );
+        } catch (dbError) {
+            console.error(
+                "Error creando usuario en la base de datos:",
+                dbError,
+            );
+
+            const { error: rollbackError } = await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+
+            if (rollbackError) {
+                console.error("Error haciendo rollback del usuario en Supabase Auth:", rollbackError);
+            }
+
             throw dbError;
-        });
-
-        return NextResponse.json(
-            {
-                message: "Usuario creado exitosamente",
-                user: {
-                    id: newDbUser.id,
-                    name: newDbUser.nombre,
-                    email: newDbUser.email,
-                    role: newDbUser.rol
-                }
-            },
-            { status: 201 }
-        );
-
-    } catch (error: unknown) {
+        }
+    } catch (error) {
         console.error("Error al crear usuario:", error);
-        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
 
         return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
+            { error: "Error interno del servidor." },
+            { status: 500 },
         );
     }
 }

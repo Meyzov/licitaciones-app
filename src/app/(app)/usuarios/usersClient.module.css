@@ -18,45 +18,11 @@
     overflow: hidden;
 }
 
-.toast {
-    position: fixed;
-    top: 24px;
-    left: 50%;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.toast_success {
-    background-color: #dbeee0;
-    color: #235d36;
-}
-
-.toast_error {
-    background-color: #f5d6d8;
-    color: #842029;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -16px);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
 .secondaryCard {
     background: #fcfbf9;
     border-radius: 12px;
     border: 1px solid #ded9cb;
-    padding: 32px;
+    padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     box-sizing: border-box;
     width: 100%;
@@ -74,17 +40,17 @@
 .button {
     background-color: #f3efe6;
     font-weight: 500;
-    color: #2c302e;
+    color: #5c5548;
     border: 1px solid #dcd6c7;
-    padding: 10px 16px;
-    border-radius: 8px;
+    padding: 12px 16px;
+    border-radius: 12px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     font-size: 0.95rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    line-height: normal;
+    line-height: 1.5;
     white-space: nowrap;
 }
 
@@ -101,6 +67,28 @@
     transform: translateY(1px);
 }
 
+.refreshIcon {
+    width: 16px;
+    height: 16px;
+    padding: 4px;
+    flex-shrink: 0;
+    margin-right: 6px;
+}
+
+.refreshIconSpinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .cardHeader {
     width: 100%;
     display: flex;
@@ -108,24 +96,35 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+    flex-shrink: 0;
 }
 
 .headerLeft {
     display: flex;
     align-items: center;
-    flex-wrap:wrap;
+    flex-wrap: wrap;
     gap: 16px;
 }
 
 .tableCard {
     background-color: #fcfbf9;
     border: 1px solid #ded9cb;
-    border-radius: 10px;
+    border-radius: 12px;
     box-sizing: border-box;
     min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    flex: 1;
+    width: 100%;
+}
+
+.tableScrollWrapper {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .tableHeader {
@@ -138,26 +137,44 @@
     border-bottom: 1px solid #ded9cb;
     font-size: 11px;
     font-weight: 700;
-    color: #3b3730;
+    color: #4a453d;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    min-width: 700px;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.tableHeader>* {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .userList {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     min-height: 0;
+    flex: 1;
 }
 
 .userRow {
     display: grid;
     grid-template-columns: 1.6fr 2fr 120px;
-    align-items: center;
     gap: 16px;
-    padding: 14px 20px;
+    padding: 12px 20px;
+    flex-shrink: 0;
     border-bottom: 1px solid #f0ece2;
+    font-size: 11px;
     transition: background-color 0.12s ease;
+    min-width: 700px;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.userRow>* {
+    min-width: 0;
+    overflow: hidden;
 }
 
 .userRow:hover {
@@ -179,42 +196,36 @@
     width: 32px;
     height: 32px;
     min-width: 32px;
-    border-radius: 8px;
+    border-radius: 6px;
     background-color: #e8e3d5;
     border: 1px solid #dcd6c7;
-    color: #2c302e;
+    color: #5c5548;
     font-size: 13px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    line-height: 1;
 }
 
 .userName {
     font-size: 13.5px;
-    line-height: 1.4;
+    line-height: 1.5;
     font-weight: 600;
-    color: #2c302e;
+    color: #5c5548;
     white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .userEmail {
-    font-size: 13px;
-    line-height: 1.4;
-    color: #6e7471;
+    font-size: 12.5px;
+    color: #8a8375;
     white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
-    padding-bottom: 1px;
-}
-
-.alignRight {
-    display: flex;
-    justify-content: flex-end;
+    line-height: 1.5;
 }
 
 .badge {
@@ -226,23 +237,26 @@
     font-weight: 500;
     border: 1px solid rgba(0, 0, 0, 0.04);
     white-space: nowrap;
+    width: fit-content;
+    line-height: 1.5;
 }
 
 .badge_admin {
     background-color: #e4efe4;
-    color: #325232;
+    color: #4a6a4a;
 }
 
 .badge_user {
     background-color: #e5edf4;
-    color: #2e4a63;
+    color: #4a5a6a;
 }
 
 .formCard {
     background: #fcfbf9;
     border-radius: 12px;
+    background-color: #f3efe6;
     border: 1px solid #ded9cb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     width: 100%;
     flex-direction: column;
@@ -252,7 +266,8 @@
 }
 
 .formContainer {
-    padding: 32px;
+    padding: 24px;
+    border-radius: 12px;
     display: flex;
     box-sizing: border-box;
     flex-direction: column;
@@ -280,21 +295,32 @@
 .formLabel {
     font-size: 13px;
     font-weight: 600;
-    color: #3b3730;
+    color: #4a453d;
+    line-height: 1.5;
 }
 
 .formInput {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid #dcd6c7;
+    background: #fcfbf9;
+    border-radius: 12px;
+    border: 1px solid #ded9cb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    padding: 14px 16px;
     font-size: 14px;
     outline: none;
-    background-color: #f4f0e6;
-    color: #2c302e;
+    color: #5c5548;
     cursor: text;
     transition: border-color 0.2s, box-shadow 0.2s;
     width: 100%;
     box-sizing: border-box;
+    min-height: 52px;
+    overflow: hidden;
+    appearance: none;
+    -webkit-appearance: none;
+    line-height: 1.5;
+}
+
+.formInput::placeholder {
+    color: #a8a090;
 }
 
 .formInput:focus {
@@ -309,20 +335,23 @@
 }
 
 .customSelectTrigger {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid #dcd6c7;
+    background: #fcfbf9;
+    border-radius: 12px;
+    border: 1px solid #ded9cb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    padding: 14px 16px;
     font-size: 14px;
-    background-color: #f4f0e6;
-    color: #2c302e;
+    color: #5c5548;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     user-select: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     box-sizing: border-box;
     width: 100%;
+    min-height: 52px;
+    line-height: 1.5;
 }
 
 .customSelectTrigger:hover {
@@ -337,7 +366,7 @@
     width: 100%;
     background-color: #fcfbf9;
     border: 1px solid #ded9cb;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     z-index: 50;
     display: flex;
@@ -346,25 +375,26 @@
 }
 
 .customDropdownItem {
-    padding: 10px 14px;
+    padding: 14px 16px;
     font-size: 14px;
-    color: #2c302e;
+    color: #5c5548;
     cursor: pointer;
-    transition: background-color 0.15s;
+    transition: background-color 0.12s ease;
+    line-height: 1.5;
 }
 
 .customDropdownItem:hover {
-    background-color: #f3efe6;
+    background-color: #faf8f3;
 }
 
 .customDropdownItem.selected {
     font-weight: 600;
-    background-color: #f7f3ec;
+    background-color: #f3efe6;
 }
 
 .cancelButton {
     background-color: #f3efe6;
-    color: #3b3730;
+    color: #5c5548;
     border: 1px solid #dcd6c7;
 }
 
@@ -372,11 +402,48 @@
     background-color: #dfd8cb;
 }
 
+.toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    line-height: 1.5;
+}
+
+.toast_success {
+    background-color: #dbeee0;
+    color: #3a5a4a;
+}
+
+.toast_error {
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
 @keyframes slideDownStagger {
     0% {
         opacity: 0;
         transform: translateY(-12px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -395,6 +462,15 @@
         min-height: auto;
     }
 
+    .secondaryCard {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .formContainer {
+        padding: 16px;
+    }
+
     .formActions {
         flex-direction: column-reverse;
         width: 100%;
@@ -408,6 +484,13 @@
         overflow: hidden;
     }
 
+    .tableScrollWrapper {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
     .tableHeader {
         display: none;
     }
@@ -417,36 +500,112 @@
         flex-direction: column;
         gap: 10px;
         padding: 14px;
+        background-color: #f3efe6;
+        overflow-y: auto;
+        min-height: 0;
+        flex: 1;
     }
 
     .userRow {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        border: 1px solid #ede8db;
-        border-bottom-width: 1px;
-        border-radius: 10px;
+        align-items: stretch;
+        gap: 18px;
+        border: 1px solid #dcd6c7;
+        border-radius: 12px;
         padding: 14px;
         background-color: #fcfbf9;
+        min-width: auto;
+        overflow: hidden;
+    }
+
+    .userRow>* {
+        min-width: 0;
+        width: 100%;
     }
 
     .userList .userRow:last-child {
-        border-bottom: 1px solid #ede8db;
+        border-bottom: 1px solid #dcd6c7;
     }
 
     .userRow:hover {
         background-color: #fcfbf9;
     }
 
-    .userEmail {
-        white-space: normal;
-        overflow: visible;
-        text-overflow: unset;
+    .cellNombre,
+    .cellEmail,
+    .cellRol {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
     }
 
-    .alignRight {
-        justify-content: flex-start;
+    .cellNombre .userIdentity {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
         width: 100%;
+    }
+
+    .userName {
+        font-size: 13px;
+    }
+
+    .userEmail {
+        font-size: 12px;
+        white-space: normal;
+        overflow: visible;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
+
+    .avatar {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        font-size: 12px;
+    }
+
+    .refreshButtonText {
+        display: none;
+    }
+
+    .refreshIcon {
+        margin-right: 0;
+    }
+
+    .formInput,
+    .customSelectTrigger {
+        min-height: 56px;
+        font-size: 14px;
+        padding: 14px 12px;
+    }
+
+    .cellNombre::before,
+    .cellEmail::before,
+    .cellRol::before {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        color: #a8a090;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1.5;
+    }
+
+    .cellNombre::before {
+        content: 'Nombre';
+    }
+
+    .cellEmail::before {
+        content: 'Email';
+    }
+
+    .cellRol::before {
+        content: 'Rol';
     }
 }

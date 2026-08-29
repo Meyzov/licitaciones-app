@@ -5,10 +5,11 @@ import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
 export async function GET() {
     try {
         const currentUser = await getAuthenticatedUser();
+
         if (!currentUser) {
             return NextResponse.json(
                 { error: "No autorizado. Inicia sesión para continuar." },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -32,14 +33,12 @@ export async function GET() {
         });
 
         return NextResponse.json(products, { status: 200 });
-
-    } catch (error: unknown) {
-        console.error("Error fetching products:", error);
-        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
+    } catch (error) {
+        console.error("Error al obtener los productos:", error);
 
         return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
+            { error: "Error interno del servidor." },
+            { status: 500 },
         );
     }
 }
@@ -47,59 +46,70 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const currentUser = await getAuthenticatedUser();
+
         if (!currentUser) {
             return NextResponse.json(
                 { error: "No autorizado. Inicia sesión para continuar." },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
         const body = await request.json();
         const { name, basePrice } = body;
 
-        if (!name || basePrice === undefined || basePrice === null) {
+        if (
+            typeof name !== "string" ||
+            basePrice === undefined ||
+            basePrice === null
+        ) {
             return NextResponse.json(
                 { error: "Faltan campos obligatorios (nombre, precio base)." },
-                { status: 400 }
+                { status: 400 },
+            );
+        }
+
+        const normalizedName = name.trim();
+        if (!normalizedName) {
+            return NextResponse.json(
+                { error: "El nombre del producto es obligatorio." },
+                { status: 400 },
             );
         }
 
         const parsedPrice = Number(basePrice);
-
-        if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+        if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
             return NextResponse.json(
                 { error: "El precio base debe ser un número mayor a 0." },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         const newProduct = await prisma.producto.create({
             data: {
-                nombre: name,
+                nombre: normalizedName,
                 precioBase: parsedPrice,
                 createdBy: currentUser.id,
+                updatedAt: null
             },
         });
 
         return NextResponse.json(
             {
-                message: "Producto creado exitosamente",
+                message: "Producto creado exitosamente.",
                 product: {
                     id: newProduct.id,
                     name: newProduct.nombre,
                     basePrice: newProduct.precioBase,
                 },
             },
-            { status: 201 }
+            { status: 201 },
         );
-
-    } catch (error: unknown) {
-        console.error("Error creating product:", error);
-        const errorMessage = error instanceof Error ? error.message : "Error interno del servidor";
+    } catch (error) {
+        console.error("Error al crear el producto:", error);
 
         return NextResponse.json(
-            { error: errorMessage },
-            { status: 500 }
+            { error: "Error interno del servidor." },
+            { status: 500 },
         );
     }
 }

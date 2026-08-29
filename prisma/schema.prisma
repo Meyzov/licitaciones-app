@@ -31,7 +31,7 @@ model Usuario {
   email String @unique
   nombre String
   rol Rol @default(user)
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   clientesCreados Cliente[] @relation("ClienteCreadoPor")
   clientesModificados Cliente[] @relation("ClienteModificadoPor")
@@ -50,9 +50,9 @@ model Cliente {
   id String @id @default(uuid()) @db.Uuid
   nombre String
   email String
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   createdBy String @map("created_by") @db.Uuid
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz
   updatedBy String? @map("updated_by") @db.Uuid
 
   creador Usuario @relation("ClienteCreadoPor", fields: [createdBy], references: [id])
@@ -67,13 +67,13 @@ model Licitacion {
   id String @id @default(uuid()) @db.Uuid
   clienteId String @map("cliente_id") @db.Uuid
   presupuestoMaximo Decimal @map("presupuesto_maximo") @db.Decimal(12, 2)
-  fechaLimite DateTime @map("fecha_limite")
+  fechaLimite DateTime @map("fecha_limite") @db.Timestamptz
   estado EstadoLicitacion @default(borrador)
   documentoPropuestaUrl String? @map("documento_propuesta_url")
   recordatorioEnviado Boolean @default(false) @map("recordatorio_enviado")
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   createdBy String @map("created_by") @db.Uuid
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz
   updatedBy String? @map("updated_by") @db.Uuid
 
   cliente Cliente @relation(fields: [clienteId], references: [id])
@@ -91,9 +91,9 @@ model Producto {
   id String @id @default(uuid()) @db.Uuid
   nombre String
   precioBase Decimal @map("precio_base") @db.Decimal(12, 2)
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   createdBy String @map("created_by") @db.Uuid
-  updatedAt DateTime? @updatedAt @map("updated_at")
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz
   updatedBy String? @map("updated_by") @db.Uuid
 
   creador Usuario @relation("ProductoCreadoPor", fields: [createdBy], references: [id])
@@ -122,7 +122,7 @@ model Pago {
   id String @id @default(uuid()) @db.Uuid
   licitacionId String @map("licitacion_id") @db.Uuid
   monto Decimal @db.Decimal(12, 2)
-  fecha DateTime @default(now())
+  fecha DateTime @default(now()) @db.Timestamptz
   createdBy String @map("created_by") @db.Uuid
 
   licitacion Licitacion @relation(fields: [licitacionId], references: [id])
@@ -138,7 +138,7 @@ model HistorialTransicion {
   usuarioId String @map("usuario_id") @db.Uuid
   estadoAnterior EstadoLicitacion? @map("estado_anterior")
   estadoNuevo EstadoLicitacion @map("estado_nuevo")
-  fechaHora DateTime @default(now()) @map("fecha_hora")
+  fechaHora DateTime @default(now()) @map("fecha_hora") @db.Timestamptz
 
   licitacion Licitacion @relation(fields: [licitacionId], references: [id])
   usuario Usuario @relation(fields: [usuarioId], references: [id])

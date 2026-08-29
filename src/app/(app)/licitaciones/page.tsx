@@ -1,9 +1,5 @@
-import styles from "./page.module.css";
+import BidsClient from "./bidsClient";
 
-export default function ClientesPage() {
-    return (
-        <div className={styles.card}>
-            <h1>Licitaciones</h1>
-        </div>
-    );
+export default async function BidsPage() {
+    return <BidsClient />;
 }

@@ -4,7 +4,11 @@ import { NextResponse, type NextRequest } from "next/server";
 const publicRoutes = ["/auth/login"];
 
 export async function proxy(request: NextRequest) {
-    let response = NextResponse.next({ request });
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    });
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,31 +19,48 @@ export async function proxy(request: NextRequest) {
                     return request.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-                    response = NextResponse.next({ request });
-                    cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+                    cookiesToSet.forEach(({ name, value }) => {
+                        request.cookies.set(name, value);
+                    });
+
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    });
+
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        response.cookies.set(name, value, options);
+                    });
                 },
             },
         }
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname);
+    const { data } = await supabase.auth.getClaims();
+    const userId = data?.claims?.sub;
 
-    if (!user && !isPublicRoute) {
-        const redirectUrl = new URL("/auth/login", request.url);
-        const redirectResponse = NextResponse.redirect(redirectUrl);
+    const currentPath = request.nextUrl.pathname;
+    const isPublicRoute = publicRoutes.includes(currentPath) || currentPath.startsWith("/auth/");
 
-        response.cookies.getAll().forEach(cookie => redirectResponse.cookies.set(cookie));
+    const redirectWithCookies = (url: URL) => {
+        const redirectResponse = NextResponse.redirect(url);
+        response.cookies.getAll().forEach((cookie) => {
+            redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+        });
         return redirectResponse;
+    };
+
+    if (!userId && !isPublicRoute) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/auth/login";
+        return redirectWithCookies(url);
     }
 
-    if (user && isPublicRoute) {
-        const redirectUrl = new URL("/dashboard", request.url);
-        const redirectResponse = NextResponse.redirect(redirectUrl);
-
-        response.cookies.getAll().forEach(cookie => redirectResponse.cookies.set(cookie));
-        return redirectResponse;
+    if (userId && currentPath === "/auth/login") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return redirectWithCookies(url);
     }
 
     return response;

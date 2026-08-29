@@ -3,12 +3,14 @@ import { prisma } from "@/lib/prisma";
 
 export async function getAuthenticatedUser() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return null;
+    const { data: claimsData } = await supabase.auth.getClaims();
+    const userId = claimsData?.claims?.sub;
+
+    if (!userId) return null;
 
     const dbUser = await prisma.usuario.findUnique({
-        where: { id: user.id },
+        where: { id: userId },
         select: { id: true, nombre: true, email: true, rol: true },
     });
 
