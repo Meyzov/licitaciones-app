@@ -67,6 +67,9 @@ const formatPrice = (price: string) => {
 export default function BidDetailClient({ bidId }: { bidId: string }) {
     const router = useRouter();
     const { toast, showToast } = useToast();
+    const [finalizingBid, setFinalizingBid] = useState(false);
+    const [losingBid, setLosingBid] = useState(false);
+    const [invoicingBid, setInvoicingBid] = useState(false);
     const [uploadingDoc, setUploadingDoc] = useState(false);
     const [sendingBid, setSendingBid] = useState(false);
 
@@ -79,6 +82,78 @@ export default function BidDetailClient({ bidId }: { bidId: string }) {
         (sum, item) => sum + item.cantidad * Number(item.precioAcordado),
         0
     ) ?? 0;
+
+    const handleFinalizeBid = async () => {
+        setFinalizingBid(true);
+
+        try {
+            const res = await fetch(`/api/licitaciones/${bidId}/finalizar`, {
+                method: "POST",
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(data.error || "Error al finalizar la licitación");
+            }
+
+            await mutate(`/api/licitaciones/${bidId}`);
+            showToast("Licitación finalizada exitosamente", "success");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Error al finalizar la licitación";
+            showToast(message, "error");
+        } finally {
+            setFinalizingBid(false);
+        }
+    };
+
+    const handleLoseBid = async () => {
+        setLosingBid(true);
+
+        try {
+            const res = await fetch(`/api/licitaciones/${bidId}/perder`, {
+                method: "POST",
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(data.error || "Error al marcar la licitación como perdida");
+            }
+
+            await mutate(`/api/licitaciones/${bidId}`);
+            showToast("Licitación marcada como perdida", "success");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Error al marcar la licitación como perdida";
+            showToast(message, "error");
+        } finally {
+            setLosingBid(false);
+        }
+    };
+
+    const handleInvoiceBid = async () => {
+        setInvoicingBid(true);
+
+        try {
+            const res = await fetch(`/api/licitaciones/${bidId}/facturar`, {
+                method: "POST",
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(data.error || "Error al facturar la licitación");
+            }
+
+            await mutate(`/api/licitaciones/${bidId}`);
+            showToast("Licitación facturada exitosamente", "success");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Error al facturar la licitación";
+            showToast(message, "error");
+        } finally {
+            setInvoicingBid(false);
+        }
+    };
 
     const handleUploadDocument = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -222,6 +297,48 @@ export default function BidDetailClient({ bidId }: { bidId: string }) {
                     >
                         <FiArrowRight size={14} />
                         {sendingBid ? "Enviando..." : "Enviar licitación"}
+                    </button>
+                </div>
+            )}
+
+            {bid.estado === "activa" && (
+                <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
+                    <div className={styles.sectionHeaderRow}>
+                        <span className={styles.sectionTitle}>Resolver licitación</span>
+                    </div>
+
+                    <div className={styles.actionsRow}>
+                        <button
+                            className={styles.addButton}
+                            onClick={handleFinalizeBid}
+                            disabled={finalizingBid || losingBid}
+                        >
+                            {finalizingBid ? "Finalizando..." : "Marcar como finalizada"}
+                        </button>
+
+                        <button
+                            className={styles.dangerButton}
+                            onClick={handleLoseBid}
+                            disabled={finalizingBid || losingBid}
+                        >
+                            {losingBid ? "Marcando..." : "Marcar como perdida"}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {bid.estado === "finalizada" && (
+                <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
+                    <div className={styles.sectionHeaderRow}>
+                        <span className={styles.sectionTitle}>Facturación</span>
+                    </div>
+
+                    <button
+                        className={styles.addButton}
+                        onClick={handleInvoiceBid}
+                        disabled={invoicingBid}
+                    >
+                        {invoicingBid ? "Facturando..." : "Facturar (pasar a por cobrar)"}
                     </button>
                 </div>
             )}

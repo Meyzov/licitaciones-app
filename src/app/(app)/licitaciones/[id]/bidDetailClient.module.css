@@ -171,6 +171,47 @@
     color: #7a4a4a;
 }
 
+.actionsRow {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.actionsRow>* {
+    flex: 1;
+    min-width: 160px;
+}
+
+.dangerButton {
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+    border: 1px solid #e5c5c7;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.dangerButton:hover {
+    background-color: #edc5c8;
+}
+
+.dangerButton:active {
+    transform: translateY(1px);
+}
+
+.dangerButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .sectionCard {
     background: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -352,6 +393,14 @@
 }
 
 @media (max-width: 640px) {
+    .actionsRow {
+        flex-direction: column;
+    }
+
+    .dangerButton {
+        width: 100%;
+    }
+
     .secondaryCard {
         padding: 16px;
         gap: 12px;
