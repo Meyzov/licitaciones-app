@@ -49,6 +49,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     box-sizing: border-box;
     line-height: 1.5;
     white-space: nowrap;
@@ -67,12 +68,33 @@
     transform: translateY(1px);
 }
 
+.buttonGreen {
+    background-color: #e4efe4;
+    color: #4a6a4a;
+    border: 1px solid #c8dcc8;
+}
+
+.buttonGreen:hover {
+    background-color: #d2e4d2;
+}
+
+.buttonRed {
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+    border: 1px solid #e5c5c7;
+}
+
+.buttonRed:hover {
+    background-color: #ecc4c6;
+}
+
 .refreshIcon {
     width: 16px;
     height: 16px;
-    padding: 4px;
     flex-shrink: 0;
-    margin-right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .refreshIconSpinning {
@@ -83,6 +105,7 @@
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -144,7 +167,7 @@
     line-height: 1.5;
 }
 
-.tableHeader > * {
+.tableHeader>* {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -171,7 +194,7 @@
     line-height: 1.5;
 }
 
-.productRow > * {
+.productRow>* {
     min-width: 0;
     overflow: hidden;
 }
@@ -341,16 +364,6 @@
     box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
 }
 
-.cancelButton {
-    background-color: #f3efe6;
-    color: #5c5548;
-    border: 1px solid #dcd6c7;
-}
-
-.cancelButton:hover {
-    background-color: #dfd8cb;
-}
-
 .toast {
     position: fixed;
     top: 24px;
@@ -380,6 +393,7 @@
         opacity: 0;
         transform: translate(-50%, -16px);
     }
+
     to {
         opacity: 1;
         transform: translate(-50%, 0);
@@ -391,6 +405,7 @@
         opacity: 0;
         transform: translateY(-12px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -466,7 +481,7 @@
         overflow: hidden;
     }
 
-    .productRow > * {
+    .productRow>* {
         min-width: 0;
         width: 100%;
     }
@@ -575,4 +590,44 @@
     .cellCreadoEl::before {
         content: 'Creado el';
     }
+}
+
+.searchWrapper {
+    padding: 16px 20px;
+    border-bottom: 1px solid #ded9cb;
+    background-color: #fcfbf9;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    display: flex;
+    border: 1px solid #dcd6c7;
+    font-size: 14px;
+    outline: none;
+    background-color: #f4f0e6;
+    color: #5c5548;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+}
+
+.searchInput::placeholder {
+    color: #a8a090;
+}
+
+.searchInput:focus {
+    border-color: #b3a995;
+    background-color: #f7f3ec;
+    box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
+}
+
+.emptyState {
+    padding: 32px 20px;
+    text-align: center;
+    color: #a8a090;
+    font-size: 13px;
+    line-height: 1.5;
 }

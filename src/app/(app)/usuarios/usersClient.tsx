@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore, useRef, useEffect } from "react";
+import { useState, useSyncExternalStore, useRef, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
+import { FiRefreshCw, FiArrowLeft, FiPlus, FiChevronDown } from "react-icons/fi";
 import styles from "./usersClient.module.css";
 
 type User = {
@@ -49,25 +50,6 @@ const useIsMounted = () => {
     );
 };
 
-function RefreshIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            <polyline points="23 4 23 10 17 10" />
-            <polyline points="1 20 1 14 7 14" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-        </svg>
-    );
-}
-
 type UsersClientProps = {
     isAdmin: boolean;
 };
@@ -79,6 +61,7 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
     const [isRoleOpen, setIsRoleOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { toast, showToast } = useToast();
+    const [searchQuery, setSearchQuery] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -104,6 +87,16 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
     const { trigger: createUser, isMutating } = useSWRMutation("/api/usuarios", mutationFetcher);
 
     const isLoadingState = isMounted ? isValidating : false;
+
+    const filteredUsers = useMemo(() => {
+        if (!searchQuery.trim()) return users;
+        const query = searchQuery.trim().toLowerCase();
+        return users.filter(
+            (user) =>
+                user.nombre.toLowerCase().includes(query) ||
+                user.email.toLowerCase().includes(query)
+        );
+    }, [users, searchQuery]);
 
     const handleRefresh = async () => {
         await refreshUsers();
@@ -149,7 +142,7 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                 {isCreating ? (
                     <div className={styles.headerLeft}>
                         <button className={styles.button} onClick={() => setIsCreating(false)}>
-                            ← Volver
+                            <FiArrowLeft className={styles.icon} /> Volver
                         </button>
                         <div className={styles.titleCard}>Nuevo usuario</div>
                     </div>
@@ -163,7 +156,7 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                                 disabled={isLoadingState}
                                 title={isLoadingState ? "Cargando..." : "Refrescar"}
                             >
-                                <RefreshIcon
+                                <FiRefreshCw
                                     className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""}`}
                                 />
                                 <span className={styles.refreshButtonText}>
@@ -173,13 +166,25 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                         </div>
 
                         {isAdmin && (
-                            <button className={styles.button} onClick={() => setIsCreating(true)}>
-                                + Nuevo usuario
+                            <button className={`${styles.button} ${styles.saveButton}`} onClick={() => setIsCreating(true)}>
+                                <FiPlus className={styles.icon} /> Nuevo usuario
                             </button>
                         )}
                     </>
                 )}
             </div>
+
+            {!isCreating && (
+                <div className={styles.searchContainer}>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre o correo electrónico..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={styles.formInput}
+                    />
+                </div>
+            )}
 
             {isCreating ? (
                 <>
@@ -231,19 +236,10 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                                         className={styles.customSelectTrigger}
                                         onClick={() => setIsRoleOpen(!isRoleOpen)} >
                                         <span>{roleLabels[formData.role]}</span>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            style={{ transform: isRoleOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} >
-                                            <polyline points="6 9 12 15 18 9"></polyline>
-                                        </svg>
+                                        <FiChevronDown
+                                            className={styles.icon}
+                                            style={{ transform: isRoleOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+                                        />
                                     </div>
 
                                     {isRoleOpen && (
@@ -282,7 +278,7 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                         <button
                             type="submit"
                             form="user-form"
-                            className={styles.button}
+                            className={`${styles.button} ${styles.saveButton}`}
                             disabled={isMutating} >
                             {isMutating ? "Guardando..." : "Guardar usuario"}
                         </button>
@@ -298,32 +294,36 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                         </div>
 
                         <div key={animKey} className={styles.userList}>
-                            {users.map((user, index) => (
-                                <div
-                                    key={user.id}
-                                    className={`${styles.userRow} ${styles.animatedRow}`}
-                                    role="row"
-                                    style={{ "--index": index } as React.CSSProperties} >
-                                    <div className={styles.cellNombre}>
-                                        <div className={styles.userIdentity}>
-                                            <span className={styles.avatar}>
-                                                {user.nombre.charAt(0).toUpperCase()}
+                            {filteredUsers.length === 0 ? (
+                                <div className={styles.emptyState}>No se encontraron usuarios.</div>
+                            ) : (
+                                filteredUsers.map((user, index) => (
+                                    <div
+                                        key={user.id}
+                                        className={`${styles.userRow} ${styles.animatedRow}`}
+                                        role="row"
+                                        style={{ "--index": index } as React.CSSProperties} >
+                                        <div className={styles.cellNombre}>
+                                            <div className={styles.userIdentity}>
+                                                <span className={styles.avatar}>
+                                                    {user.nombre.charAt(0).toUpperCase()}
+                                                </span>
+                                                <span className={styles.userName}>{user.nombre}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cellEmail}>
+                                            <span className={styles.userEmail}>{user.email}</span>
+                                        </div>
+
+                                        <div className={styles.cellRol}>
+                                            <span className={`${styles.badge} ${styles[`badge_${user.rol}`]}`}>
+                                                {roleLabels[user.rol] ?? user.rol}
                                             </span>
-                                            <span className={styles.userName}>{user.nombre}</span>
                                         </div>
                                     </div>
-
-                                    <div className={styles.cellEmail}>
-                                        <span className={styles.userEmail}>{user.email}</span>
-                                    </div>
-
-                                    <div className={styles.cellRol}>
-                                        <span className={`${styles.badge} ${styles[`badge_${user.rol}`]}`}>
-                                            {roleLabels[user.rol] ?? user.rol}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

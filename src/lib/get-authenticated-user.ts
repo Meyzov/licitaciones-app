@@ -1,16 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { cache } from "react";
 
-export async function getAuthenticatedUser() {
+export const getAuthenticatedUser = cache(async () => {
     const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    const { data: claimsData } = await supabase.auth.getClaims();
-    const userId = claimsData?.claims?.sub;
-
-    if (!userId) return null;
+    if (error || !user) {
+        return null;
+    }
 
     const dbUser = await prisma.usuario.findUnique({
-        where: { id: userId },
+        where: { id: user.id },
         select: { id: true, nombre: true, email: true, rol: true },
     });
 
@@ -22,4 +23,4 @@ export async function getAuthenticatedUser() {
         email: dbUser.email,
         role: dbUser.rol,
     };
-}
+});

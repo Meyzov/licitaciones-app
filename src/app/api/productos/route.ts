@@ -20,20 +20,29 @@ export async function GET() {
                 precioBase: true,
                 createdAt: true,
                 updatedAt: true,
+
                 creador: {
-                    select: { nombre: true },
+                    select: {
+                        nombre: true,
+                    },
                 },
+
                 modificador: {
-                    select: { nombre: true },
+                    select: {
+                        nombre: true,
+                    },
                 },
             },
+
             orderBy: {
                 nombre: "asc",
             },
         });
 
         return NextResponse.json(products, { status: 200 });
+
     } catch (error) {
+
         console.error("Error al obtener los productos:", error);
 
         return NextResponse.json(
@@ -57,11 +66,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, basePrice } = body;
 
-        if (
-            typeof name !== "string" ||
-            basePrice === undefined ||
-            basePrice === null
-        ) {
+        if (typeof name !== "string" || basePrice === undefined || basePrice === null) {
             return NextResponse.json(
                 { error: "Faltan campos obligatorios (nombre, precio base)." },
                 { status: 400 },
@@ -69,6 +74,7 @@ export async function POST(request: Request) {
         }
 
         const normalizedName = name.trim();
+
         if (!normalizedName) {
             return NextResponse.json(
                 { error: "El nombre del producto es obligatorio." },
@@ -77,6 +83,7 @@ export async function POST(request: Request) {
         }
 
         const parsedPrice = Number(basePrice);
+
         if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
             return NextResponse.json(
                 { error: "El precio base debe ser un número mayor a 0." },
@@ -89,7 +96,7 @@ export async function POST(request: Request) {
                 nombre: normalizedName,
                 precioBase: parsedPrice,
                 createdBy: currentUser.id,
-                updatedAt: null
+                updatedAt: null,
             },
         });
 
@@ -104,7 +111,9 @@ export async function POST(request: Request) {
             },
             { status: 201 },
         );
+
     } catch (error) {
+
         console.error("Error al crear el producto:", error);
 
         return NextResponse.json(

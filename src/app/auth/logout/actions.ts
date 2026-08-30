@@ -6,12 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function logoutAction() {
     const supabase = await createClient();
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-        console.error("Error al cerrar sesión:", error);
-    }
+    await supabase.auth.signOut();
 
     revalidatePath("/", "layout");
     redirect("/auth/login");

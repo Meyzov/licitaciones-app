@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore, useMemo } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
+import { FiRefreshCw, FiArrowLeft, FiPlus} from "react-icons/fi";
 import styles from "./productsClient.module.css";
 
 type Product = {
@@ -64,30 +65,12 @@ const formatPrice = (price: string) => {
     }).format(Number(price));
 };
 
-function RefreshIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            <polyline points="23 4 23 10 17 10" />
-            <polyline points="1 20 1 14 7 14" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-        </svg>
-    );
-}
-
 export default function ProductsClient() {
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
     const isMounted = useIsMounted();
     const { toast, showToast } = useToast();
+    const [searchQuery, setSearchQuery] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         basePrice: "",
@@ -101,6 +84,12 @@ export default function ProductsClient() {
     const { trigger: createProduct, isMutating } = useSWRMutation("/api/productos", mutationFetcher);
 
     const isLoadingState = isMounted ? isValidating : false;
+
+    const filteredProducts = useMemo(() => {
+        if (!searchQuery.trim()) return products;
+        const query = searchQuery.trim().toLowerCase();
+        return products.filter((product) => product.nombre.toLowerCase().includes(query));
+    }, [products, searchQuery]);
 
     const handleRefresh = async () => {
         await refreshProducts();
@@ -140,7 +129,7 @@ export default function ProductsClient() {
                 {isCreating ? (
                     <div className={styles.headerLeft}>
                         <button className={styles.button} onClick={() => setIsCreating(false)}>
-                            ← Volver
+                            <FiArrowLeft className={styles.refreshIcon} /> Volver
                         </button>
                         <div className={styles.titleCard}>Nuevo producto</div>
                     </div>
@@ -154,7 +143,7 @@ export default function ProductsClient() {
                                 disabled={isLoadingState}
                                 title={isLoadingState ? "Cargando..." : "Refrescar"}
                             >
-                                <RefreshIcon
+                                <FiRefreshCw
                                     className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""}`}
                                 />
                                 <span className={styles.refreshButtonText}>
@@ -163,12 +152,24 @@ export default function ProductsClient() {
                             </button>
                         </div>
 
-                        <button className={styles.button} onClick={() => setIsCreating(true)}>
-                            + Nuevo producto
+                        <button className={`${styles.button} ${styles.buttonGreen}`} onClick={() => setIsCreating(true)}>
+                            <FiPlus className={styles.refreshIcon} /> Nuevo producto
                         </button>
                     </>
                 )}
             </div>
+
+            {!isCreating && (
+                <div className={styles.searchContainer}>
+                    <input
+                        type="text"
+                        placeholder="Buscar producto por nombre..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={styles.formInput}
+                    />
+                </div>
+            )}
 
             {isCreating ? (
                 <>
@@ -208,7 +209,7 @@ export default function ProductsClient() {
                     <div className={styles.formActions}>
                         <button
                             type="button"
-                            className={`${styles.button} ${styles.cancelButton}`}
+                            className={`${styles.button} ${styles.buttonRed}`}
                             onClick={() => setIsCreating(false)}
                             disabled={isMutating} >
                             Cancelar
@@ -216,7 +217,7 @@ export default function ProductsClient() {
                         <button
                             type="submit"
                             form="product-form"
-                            className={styles.button}
+                            className={`${styles.button} ${styles.buttonGreen}`}
                             disabled={isMutating} >
                             {isMutating ? "Guardando..." : "Guardar producto"}
                         </button>
@@ -235,46 +236,50 @@ export default function ProductsClient() {
                         </div>
 
                         <div key={animKey} className={styles.productList}>
-                            {products.map((product, index) => (
-                                <div
-                                    key={product.id}
-                                    className={`${styles.productRow} ${styles.animatedRow}`}
-                                    role="row"
-                                    style={{ "--index": index } as React.CSSProperties} >
-                                    <div className={styles.cellNombre}>
-                                        <div className={styles.productIdentity}>
-                                            <span className={styles.avatar}>
-                                                {product.nombre.charAt(0).toUpperCase()}
+                            {filteredProducts.length === 0 ? (
+                                <div className={styles.emptyState}>No se encontraron productos.</div>
+                            ) : (
+                                filteredProducts.map((product, index) => (
+                                    <div
+                                        key={product.id}
+                                        className={`${styles.productRow} ${styles.animatedRow}`}
+                                        role="row"
+                                        style={{ "--index": index } as React.CSSProperties} >
+                                        <div className={styles.cellNombre}>
+                                            <div className={styles.productIdentity}>
+                                                <span className={styles.avatar}>
+                                                    {product.nombre.charAt(0).toUpperCase()}
+                                                </span>
+                                                <span className={styles.productName}>{product.nombre}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cellPrecioBase}>
+                                            <span className={styles.priceText}>{formatPrice(product.precioBase)}</span>
+                                        </div>
+
+                                        <div className={styles.cellModificadoPor}>
+                                            <span className={styles.metaText}>
+                                                {product.modificador ? product.modificador.nombre : "No modificado"}
                                             </span>
-                                            <span className={styles.productName}>{product.nombre}</span>
+                                        </div>
+
+                                        <div className={styles.cellModificadoEl}>
+                                            <span className={styles.metaText}>
+                                                {product.updatedAt ? formatDate(product.updatedAt) : "Sin modificar"}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellCreadoPor}>
+                                            <span className={styles.metaText}>{product.creador.nombre}</span>
+                                        </div>
+
+                                        <div className={styles.cellCreadoEl}>
+                                            <span className={styles.dateText}>{formatDate(product.createdAt)}</span>
                                         </div>
                                     </div>
-
-                                    <div className={styles.cellPrecioBase}>
-                                        <span className={styles.priceText}>{formatPrice(product.precioBase)}</span>
-                                    </div>
-
-                                    <div className={styles.cellModificadoPor}>
-                                        <span className={styles.metaText}>
-                                            {product.modificador ? product.modificador.nombre : "No modificado"}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellModificadoEl}>
-                                        <span className={styles.metaText}>
-                                            {product.updatedAt ? formatDate(product.updatedAt) : "Sin modificar"}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellCreadoPor}>
-                                        <span className={styles.metaText}>{product.creador.nombre}</span>
-                                    </div>
-
-                                    <div className={styles.cellCreadoEl}>
-                                        <span className={styles.dateText}>{formatDate(product.createdAt)}</span>
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

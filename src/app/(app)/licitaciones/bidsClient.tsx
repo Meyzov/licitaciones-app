@@ -4,6 +4,8 @@ import { useState, useSyncExternalStore, useMemo } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
+import { useRouter } from "next/navigation";
+import { FiPlus, FiArrowLeft, FiRefreshCw, FiCalendar, FiChevronRight } from "react-icons/fi";
 import styles from "./bidsClient.module.css";
 
 type Bid = {
@@ -83,51 +85,14 @@ const formatPrice = (price: string) => {
     }).format(Number(price));
 };
 
-function RefreshIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            <polyline points="23 4 23 10 17 10" />
-            <polyline points="1 20 1 14 7 14" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-        </svg>
-    );
-}
-
-function CalendarIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-    );
-}
-
 export default function BidsClient() {
     const [view, setView] = useState<View>("list");
     const [animKey, setAnimKey] = useState(0);
     const isMounted = useIsMounted();
     const { toast, showToast } = useToast();
+    const router = useRouter();
     const [clientSearch, setClientSearch] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [formData, setFormData] = useState({
         maxBudget: "",
@@ -153,6 +118,12 @@ export default function BidsClient() {
         const query = clientSearch.trim().toLowerCase();
         return clients.filter((client) => client.nombre.toLowerCase().startsWith(query));
     }, [clients, clientSearch]);
+
+    const filteredBids = useMemo(() => {
+        if (!searchQuery.trim()) return bids;
+        const query = searchQuery.trim().toLowerCase();
+        return bids.filter((bid) => bid.cliente.nombre.toLowerCase().includes(query));
+    }, [bids, searchQuery]);
 
     const handleRefresh = async () => {
         await refreshBids();
@@ -205,6 +176,7 @@ export default function BidsClient() {
                     {toast.message}
                 </div>
             )}
+
             <div className={styles.cardHeader}>
                 {view === "list" && (
                     <>
@@ -216,8 +188,9 @@ export default function BidsClient() {
                                 disabled={isLoadingState}
                                 title={isLoadingState ? "Cargando..." : "Refrescar"}
                             >
-                                <RefreshIcon
+                                <FiRefreshCw
                                     className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""}`}
+                                    size={16}
                                 />
                                 <span className={styles.refreshButtonText}>
                                     {isLoadingState ? "Cargando..." : "Refrescar"}
@@ -225,8 +198,10 @@ export default function BidsClient() {
                             </button>
                         </div>
 
-                        <button className={styles.button} onClick={handleStartCreating}>
-                            + Nueva licitación
+                        <button className={`${styles.button} ${styles.buttonGreen}`} onClick={handleStartCreating}>
+                            <span className={styles.inlineFlexBox}>
+                                <FiPlus size={16} /> Nueva licitación
+                            </span>
                         </button>
                     </>
                 )}
@@ -234,7 +209,9 @@ export default function BidsClient() {
                 {view === "create" && (
                     <div className={styles.headerLeft}>
                         <button className={styles.button} onClick={() => setView("list")}>
-                            ← Volver
+                            <span className={styles.inlineFlexBox}>
+                                <FiArrowLeft size={16} /> Volver
+                            </span>
                         </button>
                         <div className={styles.titleCard}>Nueva licitación</div>
                     </div>
@@ -243,12 +220,26 @@ export default function BidsClient() {
                 {view === "selectClient" && (
                     <div className={styles.headerLeft}>
                         <button className={styles.button} onClick={() => setView("create")}>
-                            ← Volver
+                            <span className={styles.inlineFlexBox}>
+                                <FiArrowLeft size={16} /> Volver
+                            </span>
                         </button>
                         <div className={styles.titleCard}>Seleccionar cliente</div>
                     </div>
                 )}
             </div>
+
+            {view === "list" && (
+                <div className={styles.searchContainer}>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Buscar licitación por nombre de cliente..."
+                        className={styles.formInput}
+                    />
+                </div>
+            )}
 
             {view === "create" && (
                 <>
@@ -256,13 +247,15 @@ export default function BidsClient() {
                         <form
                             id="bid-form"
                             onSubmit={handleSubmitBid}
-                            className={styles.formContainer} >
+                            className={styles.formContainer}
+                        >
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>Cliente</label>
                                 <button
                                     type="button"
                                     className={styles.clientPickerButton}
-                                    onClick={() => setView("selectClient")} >
+                                    onClick={() => setView("selectClient")}
+                                >
                                     {selectedClient ? (
                                         <span className={styles.clientPickerSelected}>
                                             <span className={styles.avatarSmall}>
@@ -275,7 +268,9 @@ export default function BidsClient() {
                                             Buscar cliente...
                                         </span>
                                     )}
-                                    <span className={styles.clientPickerIcon}>→</span>
+                                    <span className={styles.clientPickerIcon}>
+                                        <FiChevronRight size={16} />
+                                    </span>
                                 </button>
                             </div>
 
@@ -290,20 +285,22 @@ export default function BidsClient() {
                                     step="0.01"
                                     min="0.01"
                                     className={styles.formInput}
-                                    required />
+                                    required
+                                />
                             </div>
 
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>Fecha límite</label>
                                 <div className={styles.datePickerWrapper}>
-                                    <CalendarIcon className={styles.datePickerIcon} />
+                                    <FiCalendar className={styles.datePickerIcon} size={18} />
                                     <input
                                         type="datetime-local"
                                         name="deadline"
                                         value={formData.deadline}
                                         onChange={handleInputChange}
                                         className={`${styles.formInput} ${styles.dateInput}`}
-                                        required />
+                                        required
+                                    />
                                 </div>
                             </div>
                         </form>
@@ -312,16 +309,18 @@ export default function BidsClient() {
                     <div className={styles.formActions}>
                         <button
                             type="button"
-                            className={`${styles.button} ${styles.cancelButton}`}
+                            className={`${styles.button} ${styles.buttonRed}`}
                             onClick={() => setView("list")}
-                            disabled={isMutating} >
+                            disabled={isMutating}
+                        >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             form="bid-form"
-                            className={styles.button}
-                            disabled={isMutating} >
+                            className={`${styles.button} ${styles.buttonGreen}`}
+                            disabled={isMutating}
+                        >
                             {isMutating ? "Guardando..." : "Guardar licitación"}
                         </button>
                     </div>
@@ -337,7 +336,8 @@ export default function BidsClient() {
                             onChange={(e) => setClientSearch(e.target.value)}
                             placeholder="Buscar cliente por nombre..."
                             className={styles.searchInput}
-                            autoFocus />
+                            autoFocus
+                        />
                     </div>
 
                     <div className={styles.clientPickList}>
@@ -349,7 +349,8 @@ export default function BidsClient() {
                                     key={client.id}
                                     type="button"
                                     className={styles.clientPickRow}
-                                    onClick={() => handleSelectClient(client)} >
+                                    onClick={() => handleSelectClient(client)}
+                                >
                                     <span className={styles.avatar}>
                                         {client.nombre.charAt(0).toUpperCase()}
                                     </span>
@@ -379,62 +380,68 @@ export default function BidsClient() {
                         </div>
 
                         <div key={animKey} className={styles.bidList}>
-                            {bids.map((bid, index) => (
-                                <div
-                                    key={bid.id}
-                                    className={`${styles.bidRow} ${styles.animatedRow}`}
-                                    role="row"
-                                    style={{ "--index": index } as React.CSSProperties} >
-                                    <div className={styles.cellCliente}>
-                                        <div className={styles.bidIdentity}>
-                                            <span className={styles.avatar}>
-                                                {bid.cliente.nombre.charAt(0).toUpperCase()}
+                            {filteredBids.length === 0 ? (
+                                <div className={styles.emptyState}>No se encontraron licitaciones.</div>
+                            ) : (
+                                filteredBids.map((bid, index) => (
+                                    <div
+                                        key={bid.id}
+                                        className={`${styles.bidRow} ${styles.animatedRow} ${styles.bidRowClickable}`}
+                                        role="row"
+                                        onClick={() => router.push(`/licitaciones/${bid.id}`)}
+                                        style={{ "--index": index } as React.CSSProperties}
+                                    >
+                                        <div className={styles.cellCliente}>
+                                            <div className={styles.bidIdentity}>
+                                                <span className={styles.avatar}>
+                                                    {bid.cliente.nombre.charAt(0).toUpperCase()}
+                                                </span>
+                                                <span className={styles.bidClientName}>{bid.cliente.nombre}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cellEstado}>
+                                            <span className={`${styles.badge} ${styles[`badge_${bid.estado}`]}`}>
+                                                {stateLabels[bid.estado] ?? bid.estado}
                                             </span>
-                                            <span className={styles.bidClientName}>{bid.cliente.nombre}</span>
+                                        </div>
+
+                                        <div className={styles.cellPresupuesto}>
+                                            <span className={styles.priceText}>
+                                                {formatPrice(bid.presupuestoMaximo)}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellFechaLimite}>
+                                            <span className={styles.metaText}>
+                                                {formatDate(bid.fechaLimite)}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellModificadoPor}>
+                                            <span className={styles.metaText}>
+                                                {bid.modificador ? bid.modificador.nombre : "No modificado"}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellModificadoEl}>
+                                            <span className={styles.metaText}>
+                                                {bid.updatedAt ? formatDate(bid.updatedAt) : "Sin modificar"}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellCreadoPor}>
+                                            <span className={styles.metaText}>
+                                                {bid.creador.nombre}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellCreadoEl}>
+                                            <span className={styles.dateText}>{formatDate(bid.createdAt)}</span>
                                         </div>
                                     </div>
-
-                                    <div className={styles.cellEstado}>
-                                        <span className={`${styles.badge} ${styles[`badge_${bid.estado}`]}`}>
-                                            {stateLabels[bid.estado] ?? bid.estado}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellPresupuesto}>
-                                        <span className={styles.priceText}>
-                                            {formatPrice(bid.presupuestoMaximo)}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellFechaLimite}>
-                                        <span className={styles.metaText}>
-                                            {formatDate(bid.fechaLimite)}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellModificadoPor}>
-                                        <span className={styles.metaText}>
-                                            {bid.modificador ? bid.modificador.nombre : "No modificado"}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellModificadoEl}>
-                                        <span className={styles.metaText}>
-                                            {bid.updatedAt ? formatDate(bid.updatedAt) : "Sin modificar"}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellCreadoPor}>
-                                        <span className={styles.metaText}>
-                                            {bid.creador.nombre}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellCreadoEl}>
-                                        <span className={styles.dateText}>{formatDate(bid.createdAt)}</span>
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>

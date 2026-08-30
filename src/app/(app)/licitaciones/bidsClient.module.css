@@ -28,11 +28,10 @@
     width: 100%;
     height: 100%;
     min-height: 0;
-    flex: 1;
+    flex: 1 1 300px;
     flex-direction: column;
     gap: 16px;
     display: flex;
-    flex: 1 1 300px;
     overflow: hidden;
 }
 
@@ -67,6 +66,26 @@
     transform: translateY(1px);
 }
 
+.buttonGreen {
+    background-color: #e4efe4;
+    color: #4a6a4a;
+    border: 1px solid #c8dcc8;
+}
+
+.buttonGreen:hover {
+    background-color: #d2e4d2;
+}
+
+.buttonRed {
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+    border: 1px solid #e5c5c7;
+}
+
+.buttonRed:hover {
+    background-color: #ecc5c7;
+}
+
 .refreshIcon {
     width: 16px;
     height: 16px;
@@ -83,6 +102,7 @@
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -144,7 +164,7 @@
     line-height: 1.5;
 }
 
-.tableHeader > * {
+.tableHeader>* {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -171,7 +191,11 @@
     line-height: 1.5;
 }
 
-.bidRow > * {
+.bidRowClickable {
+    cursor: pointer;
+}
+
+.bidRow>* {
     min-width: 0;
     overflow: hidden;
 }
@@ -213,7 +237,6 @@
     line-height: 1.5;
     font-weight: 600;
     color: #5c5548;
-    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -229,7 +252,6 @@
 .metaText {
     font-size: 12.5px;
     color: #8a8375;
-    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.5;
@@ -421,16 +443,6 @@
     padding-left: 44px;
 }
 
-.cancelButton {
-    background-color: #f3efe6;
-    color: #5c5548;
-    border: 1px solid #dcd6c7;
-}
-
-.cancelButton:hover {
-    background-color: #dfd8cb;
-}
-
 .toast {
     position: fixed;
     top: 24px;
@@ -460,6 +472,7 @@
         opacity: 0;
         transform: translate(-50%, -16px);
     }
+
     to {
         opacity: 1;
         transform: translate(-50%, 0);
@@ -471,6 +484,7 @@
         opacity: 0;
         transform: translateY(-12px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -546,7 +560,7 @@
         overflow: hidden;
     }
 
-    .bidRow > * {
+    .bidRow>* {
         min-width: 0;
         width: 100%;
     }
@@ -754,8 +768,6 @@
     width: 100%;
     padding: 10px 14px;
     border-radius: 12px;
-    flex-wrap: wrap;
-    white-space: wrap;
     display: flex;
     border: 1px solid #dcd6c7;
     font-size: 14px;
@@ -839,4 +851,10 @@
     color: #a8a090;
     font-size: 13px;
     line-height: 1.5;
+}
+
+.inlineFlexBox {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }

@@ -1,0 +1,478 @@
+.secondaryCard {
+    background: #fcfbf9;
+    border-radius: 12px;
+    border: 1px solid #ded9cb;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: calc(100dvh - 32px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.loadingText,
+.errorText {
+    color: #8a8375;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.cardHeader {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+}
+
+.titleCard,
+.button,
+.docLink,
+.addButton,
+.statusWrapper {
+    background-color: #f3efe6;
+    font-weight: 500;
+    color: #5c5548;
+    border: 1px solid #dcd6c7;
+    padding: 10px 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    line-height: 1.5;
+    white-space: nowrap;
+    text-decoration: none;
+    gap: 8px;
+}
+
+.button {
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.button:hover {
+    background-color: #dfd8cb;
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.addButton {
+    background-color: #e4efe4;
+    color: #4a6a4a;
+    border-color: #c8dcc8;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.addButton:hover {
+    background-color: #d4e4d4;
+}
+
+.addButton:active {
+    transform: translateY(1px);
+}
+
+.addButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.docLink {
+    background-color: #e5edf4;
+    color: #4a5a6a;
+    border-color: #cdd7e3;
+    transition: background-color 0.2s;
+}
+
+.docLink:hover {
+    background-color: #d4e0ed;
+}
+
+.statusWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.statusLabel {
+    font-size: 0.9rem;
+    color: #8a8375;
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    white-space: nowrap;
+    width: fit-content;
+    line-height: 1.5;
+    box-sizing: border-box;
+    letter-spacing: 0.5px;
+}
+
+.badge_borrador {
+    background-color: #e9e7e2;
+    color: #7a7568;
+}
+
+.badge_activa {
+    background-color: #e4efe4;
+    color: #4a6a4a;
+}
+
+.badge_finalizada {
+    background-color: #e5edf4;
+    color: #4a5a6a;
+}
+
+.badge_por_cobrar {
+    background-color: #f5edd8;
+    color: #7a6a3a;
+}
+
+.badge_cobrada {
+    background-color: #d8ecdd;
+    color: #3a5a4a;
+}
+
+.badge_perdida {
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+}
+
+.sectionCard {
+    background: #fcfbf9;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.sectionCardInfo {
+    flex-shrink: 0;
+}
+
+.sectionHeaderRow {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.clientCard {
+    background: #f3efe6;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.clientAvatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    background-color: #e8e3d5;
+    border: 1px solid #dcd6c7;
+    color: #5c5548;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.clientInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.clientName {
+    font-size: 15px;
+    font-weight: 600;
+    color: #5c5548;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.clientEmail {
+    font-size: 12.5px;
+    color: #8a8375;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.infoCard {
+    background: #f3efe6;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.infoLabel {
+    font-size: 10px;
+    font-weight: 700;
+    color: #a8a090;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+}
+
+.infoValue {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5c5548;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sectionTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4a453d;
+    margin: 0;
+    line-height: 1.5;
+    flex-shrink: 0;
+}
+
+.emptyText {
+    color: #a8a090;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
+    flex-shrink: 0;
+}
+
+.historyPreview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background-color: #f3efe6;
+    border: 1px solid #ded9cb;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.historyStates {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5c5548;
+}
+
+.secondaryCard::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.secondaryCard::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.secondaryCard::-webkit-scrollbar-thumb {
+    background-color: #d4cfc4;
+    border-radius: 3px;
+}
+
+@media (max-width: 1024px) {
+    .infoGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .secondaryCard {
+        padding: 16px;
+        gap: 12px;
+        height: auto;
+        min-height: 100%;
+        max-height: none;
+    }
+
+    .sectionCard {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .sectionHeaderRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .docLink {
+        width: 100%;
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+
+    .clientCard {
+        padding: 14px;
+    }
+
+    .clientAvatar {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+    .clientName {
+        font-size: 14px;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .clientEmail {
+        font-size: 12px;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .infoGrid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .infoCard {
+        padding: 14px;
+        gap: 6px;
+    }
+
+    .infoValue {
+        font-size: 13px;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .titleCard {
+        width: 100%;
+        white-space: normal;
+    }
+
+    .button {
+        padding: 10px 14px;
+    }
+
+    .badge {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .addButton {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 14px;
+    }
+}
+
+.toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast_success {
+    background-color: #dbeee0;
+    color: #235d36;
+}
+
+.toast_error {
+    background-color: #f5d6d8;
+    color: #842029;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}

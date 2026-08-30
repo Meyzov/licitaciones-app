@@ -20,26 +20,30 @@ export async function GET() {
                 email: true,
                 createdAt: true,
                 updatedAt: true,
+
                 creador: {
                     select: {
                         nombre: true,
                     },
                 },
+
                 modificador: {
                     select: {
                         nombre: true,
                     },
                 },
             },
+
             orderBy: {
                 nombre: "asc",
             },
         });
 
         return NextResponse.json(clients, { status: 200 });
-    } catch (error) {
-        console.error("Error al obtener los clientes:", error);
 
+    } catch (error) {
+
+        console.error("Error al obtener los clientes:", error);
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },
@@ -61,10 +65,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, email } = body;
 
-        if (
-            typeof name !== "string" ||
-            typeof email !== "string"
-        ) {
+        if (typeof name !== "string" || typeof email !== "string") {
             return NextResponse.json(
                 { error: "Nombre y email son obligatorios." },
                 { status: 400 },
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
                 nombre: normalizedName,
                 email: normalizedEmail,
                 createdBy: currentUser.id,
-                updatedAt: null
+                updatedAt: null,
             },
         });
 
@@ -102,8 +103,8 @@ export async function POST(request: Request) {
             { status: 201 },
         );
     } catch (error) {
-        console.error("Error al crear el cliente:", error);
 
+        console.error("Error al crear el cliente:", error);
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },

@@ -5,9 +5,7 @@ const publicRoutes = ["/auth/login"];
 
 export async function proxy(request: NextRequest) {
     let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
+        request: { headers: request.headers },
     });
 
     const supabase = createServerClient(
@@ -19,30 +17,23 @@ export async function proxy(request: NextRequest) {
                     return request.cookies.getAll();
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value }) => {
-                        request.cookies.set(name, value);
-                    });
-
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
                     response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
+                        request,
                     });
 
-                    cookiesToSet.forEach(({ name, value, options }) => {
-                        response.cookies.set(name, value, options);
-                    });
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        response.cookies.set(name, value, options)
+                    );
                 },
             },
         }
     );
 
-    const { data } = await supabase.auth.getClaims();
-    const userId = data?.claims?.sub;
-
+    const { data: { user } } = await supabase.auth.getUser();
     const currentPath = request.nextUrl.pathname;
-    const isPublicRoute = publicRoutes.includes(currentPath) || currentPath.startsWith("/auth/");
 
+    const isPublicRoute = publicRoutes.includes(currentPath) || currentPath.startsWith("/auth/");
     const redirectWithCookies = (url: URL) => {
         const redirectResponse = NextResponse.redirect(url);
         response.cookies.getAll().forEach((cookie) => {
@@ -51,23 +42,23 @@ export async function proxy(request: NextRequest) {
         return redirectResponse;
     };
 
-    if (!userId && !isPublicRoute) {
+    if (!user && !isPublicRoute) {
         const url = request.nextUrl.clone();
         url.pathname = "/auth/login";
         return redirectWithCookies(url);
     }
 
-    if (userId && currentPath === "/auth/login") {
+    if (user && currentPath === "/auth/login") {
         const url = request.nextUrl.clone();
         url.pathname = "/dashboard";
         return redirectWithCookies(url);
     }
 
-    return response;
+    return response
 }
 
 export const config = {
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+        "/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };

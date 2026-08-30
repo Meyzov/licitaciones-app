@@ -21,30 +21,36 @@ export async function GET() {
                 estado: true,
                 createdAt: true,
                 updatedAt: true,
+
                 cliente: {
                     select: {
                         id: true,
                         nombre: true,
                     },
                 },
+
                 creador: {
                     select: {
                         nombre: true,
                     },
                 },
+
                 modificador: {
                     select: {
                         nombre: true,
                     },
                 },
             },
+
             orderBy: {
                 createdAt: "desc",
             },
         });
 
         return NextResponse.json(bids, { status: 200 });
+
     } catch (error) {
+
         console.error("Error al obtener las licitaciones:", error);
 
         return NextResponse.json(
@@ -68,11 +74,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { clientId, maxBudget, deadline } = body;
 
-        if (
-            typeof clientId !== "string" ||
-            (typeof maxBudget !== "number" && typeof maxBudget !== "string") ||
-            typeof deadline !== "string"
-        ) {
+        if (typeof clientId !== "string" || (typeof maxBudget !== "number" && typeof maxBudget !== "string") || typeof deadline !== "string") {
             return NextResponse.json(
                 { error: "Los datos enviados no son válidos." },
                 { status: 400 },
@@ -80,6 +82,7 @@ export async function POST(request: Request) {
         }
 
         const normalizedClientId = clientId.trim();
+
         if (!normalizedClientId) {
             return NextResponse.json(
                 { error: "El cliente es obligatorio." },
@@ -88,6 +91,7 @@ export async function POST(request: Request) {
         }
 
         const parsedBudget = Number(maxBudget);
+
         if (!Number.isFinite(parsedBudget) || parsedBudget <= 0) {
             return NextResponse.json(
                 { error: "El presupuesto máximo debe ser un número mayor a 0." },
@@ -96,6 +100,7 @@ export async function POST(request: Request) {
         }
 
         const parsedDeadline = new Date(deadline);
+
         if (Number.isNaN(parsedDeadline.getTime())) {
             return NextResponse.json(
                 { error: "La fecha límite no es válida." },
@@ -114,6 +119,7 @@ export async function POST(request: Request) {
             where: {
                 id: normalizedClientId,
             },
+
             select: {
                 id: true,
             },
@@ -133,7 +139,7 @@ export async function POST(request: Request) {
                 fechaLimite: parsedDeadline,
                 estado: "borrador",
                 createdBy: currentUser.id,
-                updatedAt: null
+                updatedAt: null,
             },
         });
 
@@ -147,7 +153,9 @@ export async function POST(request: Request) {
             },
             { status: 201 },
         );
+
     } catch (error) {
+
         console.error("Error al crear la licitación:", error);
 
         return NextResponse.json(

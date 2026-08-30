@@ -26,13 +26,16 @@ export async function GET() {
                 email: true,
                 rol: true,
             },
+
             orderBy: {
                 nombre: "asc",
             },
         });
 
         return NextResponse.json(users, { status: 200 });
+
     } catch (error) {
+
         console.error("Error al obtener los usuarios:", error);
 
         return NextResponse.json(
@@ -63,11 +66,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, email, password, role } = body;
 
-        if (
-            typeof name !== "string" ||
-            typeof email !== "string" ||
-            typeof password !== "string"
-        ) {
+        if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string") {
             return NextResponse.json(
                 { error: "Nombre, email y contraseña son obligatorios." },
                 { status: 400 },
@@ -99,10 +98,12 @@ export async function POST(request: Request) {
         }
 
         const selectedRole = role ?? "user";
+
         const existingUser = await prisma.usuario.findUnique({
             where: {
                 email: normalizedEmail,
             },
+
             select: {
                 id: true,
             },
@@ -115,17 +116,21 @@ export async function POST(request: Request) {
             );
         }
 
-        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-            email: normalizedEmail,
-            password,
-            email_confirm: true,
-        });
+        const { data: authData, error: authError } =
+            await supabaseAdmin.auth.admin.createUser({
+                email: normalizedEmail,
+                password,
+                email_confirm: true,
+            });
 
         if (authError || !authData.user) {
-            console.error("Error creando usuario en Supabase Auth:", authError);
+            console.error(
+                "Error creando usuario en Supabase Auth:",
+                authError,
+            );
 
             return NextResponse.json(
-                { error: "No se pudo crear el usuario en el sistema de autenticación.", },
+                { error: "No se pudo crear el usuario en el sistema de autenticación." },
                 { status: 400 },
             );
         }
@@ -138,6 +143,7 @@ export async function POST(request: Request) {
                     nombre: normalizedName,
                     rol: selectedRole,
                 },
+
                 select: {
                     id: true,
                     nombre: true,
@@ -158,7 +164,9 @@ export async function POST(request: Request) {
                 },
                 { status: 201 },
             );
+
         } catch (dbError) {
+
             console.error(
                 "Error creando usuario en la base de datos:",
                 dbError,
@@ -167,12 +175,16 @@ export async function POST(request: Request) {
             const { error: rollbackError } = await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
 
             if (rollbackError) {
-                console.error("Error haciendo rollback del usuario en Supabase Auth:", rollbackError);
+                console.error(
+                    "Error haciendo rollback del usuario en Supabase Auth:",
+                    rollbackError,
+                );
             }
 
             throw dbError;
         }
     } catch (error) {
+
         console.error("Error al crear usuario:", error);
 
         return NextResponse.json(

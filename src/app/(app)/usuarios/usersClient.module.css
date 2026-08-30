@@ -28,11 +28,10 @@
     width: 100%;
     height: 100%;
     min-height: 0;
-    flex: 1;
+    flex: 1 1 300px;
     flex-direction: column;
     gap: 16px;
     display: flex;
-    flex: 1 1 300px;
     overflow: hidden;
 }
 
@@ -57,6 +56,7 @@
 .button {
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
+    gap: 8px;
 }
 
 .button:hover {
@@ -70,9 +70,10 @@
 .refreshIcon {
     width: 16px;
     height: 16px;
-    padding: 4px;
     flex-shrink: 0;
-    margin-right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .refreshIconSpinning {
@@ -87,6 +88,15 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cardHeader {
@@ -214,7 +224,6 @@
     line-height: 1.5;
     font-weight: 600;
     color: #5c5548;
-    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -222,7 +231,6 @@
 .userEmail {
     font-size: 12.5px;
     color: #8a8375;
-    white-space: wrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.5;
@@ -242,13 +250,13 @@
 }
 
 .badge_admin {
-    background-color: #e4efe4;
+    background-color: #d8ecdd;
     color: #4a6a4a;
 }
 
 .badge_user {
-    background-color: #e5edf4;
-    color: #4a5a6a;
+    background-color: #f5d6d8;
+    color: #7a4a4a;
 }
 
 .formCard {
@@ -393,13 +401,24 @@
 }
 
 .cancelButton {
-    background-color: #f3efe6;
-    color: #5c5548;
-    border: 1px solid #dcd6c7;
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+    border: 1px solid #e5c5c7;
 }
 
 .cancelButton:hover {
-    background-color: #dfd8cb;
+    background-color: #f5d6d8;
+}
+
+.saveButton {
+    background-color: #e4efe4;
+    color: #4a6a4a;
+    border: 1px solid #c8dcc8;
+}
+
+.saveButton:hover {
+    background-color: #e4efe4;
+    color: #4a6a4a;
 }
 
 .toast {
@@ -417,7 +436,7 @@
 }
 
 .toast_success {
-    background-color: #dbeee0;
+    background-color: #d8ecdd;
     color: #3a5a4a;
 }
 
@@ -456,156 +475,42 @@
     animation-delay: calc(var(--index) * 0.06s);
 }
 
-@media (max-width: 640px) {
-    .baseCard {
-        height: auto;
-        min-height: auto;
-    }
+.searchWrapper {
+    padding: 16px 20px;
+    border-bottom: 1px solid #ded9cb;
+    background-color: #fcfbf9;
+    flex-shrink: 0;
+}
 
-    .secondaryCard {
-        padding: 16px;
-        gap: 12px;
-    }
+.searchInput {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    display: flex;
+    border: 1px solid #dcd6c7;
+    font-size: 14px;
+    outline: none;
+    background-color: #f4f0e6;
+    color: #5c5548;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+}
 
-    .formContainer {
-        padding: 16px;
-    }
+.searchInput::placeholder {
+    color: #a8a090;
+}
 
-    .formActions {
-        flex-direction: column-reverse;
-        width: 100%;
-    }
+.searchInput:focus {
+    border-color: #b3a995;
+    background-color: #f7f3ec;
+    box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
+}
 
-    .formActions button {
-        width: 100%;
-    }
-
-    .tableCard {
-        overflow: hidden;
-    }
-
-    .tableScrollWrapper {
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .tableHeader {
-        display: none;
-    }
-
-    .userList {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 14px;
-        background-color: #f3efe6;
-        overflow-y: auto;
-        min-height: 0;
-        flex: 1;
-    }
-
-    .userRow {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 18px;
-        border: 1px solid #dcd6c7;
-        border-radius: 12px;
-        padding: 14px;
-        background-color: #fcfbf9;
-        min-width: auto;
-        overflow: hidden;
-    }
-
-    .userRow>* {
-        min-width: 0;
-        width: 100%;
-    }
-
-    .userList .userRow:last-child {
-        border-bottom: 1px solid #dcd6c7;
-    }
-
-    .userRow:hover {
-        background-color: #fcfbf9;
-    }
-
-    .cellNombre,
-    .cellEmail,
-    .cellRol {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-
-    .cellNombre .userIdentity {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .userName {
-        font-size: 13px;
-    }
-
-    .userEmail {
-        font-size: 12px;
-        white-space: normal;
-        overflow: visible;
-    }
-
-    .badge {
-        font-size: 0.8rem;
-        padding: 3px 10px;
-    }
-
-    .avatar {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        font-size: 12px;
-    }
-
-    .refreshButtonText {
-        display: none;
-    }
-
-    .refreshIcon {
-        margin-right: 0;
-    }
-
-    .formInput,
-    .customSelectTrigger {
-        min-height: 56px;
-        font-size: 14px;
-        padding: 14px 12px;
-    }
-
-    .cellNombre::before,
-    .cellEmail::before,
-    .cellRol::before {
-        display: block;
-        font-size: 10px;
-        font-weight: 700;
-        color: #a8a090;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        line-height: 1.5;
-    }
-
-    .cellNombre::before {
-        content: 'Nombre';
-    }
-
-    .cellEmail::before {
-        content: 'Email';
-    }
-
-    .cellRol::before {
-        content: 'Rol';
-    }
+.emptyState {
+    padding: 32px 20px;
+    text-align: center;
+    color: #a8a090;
+    font-size: 13px;
+    line-height: 1.5;
 }

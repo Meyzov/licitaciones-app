@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
+import { FiRefreshCw, FiArrowLeft, FiPlus } from "react-icons/fi";
 import styles from "./clientsClient.module.css";
 
 type Client = {
@@ -57,28 +58,10 @@ const formatDate = (isoDate: string) => {
     });
 };
 
-function RefreshIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-        >
-            <polyline points="23 4 23 10 17 10" />
-            <polyline points="1 20 1 14 7 14" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-        </svg>
-    );
-}
-
 export default function ClientsClient() {
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("");
     const isMounted = useIsMounted();
     const { toast, showToast } = useToast();
     const [formData, setFormData] = useState({
@@ -121,6 +104,11 @@ export default function ClientsClient() {
         }
     };
 
+    const filteredClients = clients.filter((client) =>
+        client.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className={styles.secondaryCard}>
             {toast && (
@@ -132,8 +120,9 @@ export default function ClientsClient() {
             <div className={styles.cardHeader}>
                 {isCreating ? (
                     <div className={styles.headerLeft}>
-                        <button className={styles.button} onClick={() => setIsCreating(false)}>
-                            ← Volver
+                        <button className={`${styles.button}`} onClick={() => setIsCreating(false)}>
+                            <FiArrowLeft />
+                            Volver
                         </button>
                         <div className={styles.titleCard}>Nuevo cliente</div>
                     </div>
@@ -147,8 +136,8 @@ export default function ClientsClient() {
                                 disabled={isLoadingState}
                                 title={isLoadingState ? "Cargando..." : "Refrescar"}
                             >
-                                <RefreshIcon
-                                    className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""}`}
+                                <FiRefreshCw
+                                    className={`${isLoadingState ? styles.refreshIconSpinning : ""}`}
                                 />
                                 <span className={styles.refreshButtonText}>
                                     {isLoadingState ? "Cargando..." : "Refrescar"}
@@ -156,12 +145,25 @@ export default function ClientsClient() {
                             </button>
                         </div>
 
-                        <button className={styles.button} onClick={() => setIsCreating(true)}>
-                            + Nuevo cliente
+                        <button className={`${styles.button} ${styles.buttonSuccess}`} onClick={() => setIsCreating(true)}>
+                            <FiPlus />
+                            Nuevo cliente
                         </button>
                     </>
                 )}
             </div>
+
+            {!isCreating && (
+                <div className={styles.searchContainer}>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre o correo electrónico..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className={styles.formInput}
+                    />
+                </div>
+            )}
 
             {isCreating ? (
                 <>
@@ -199,7 +201,7 @@ export default function ClientsClient() {
                     <div className={styles.formActions}>
                         <button
                             type="button"
-                            className={`${styles.button} ${styles.cancelButton}`}
+                            className={`${styles.button} ${styles.buttonDanger}`}
                             onClick={() => setIsCreating(false)}
                             disabled={isMutating} >
                             Cancelar
@@ -207,7 +209,7 @@ export default function ClientsClient() {
                         <button
                             type="submit"
                             form="client-form"
-                            className={styles.button}
+                            className={`${styles.button} ${styles.buttonSuccess}`}
                             disabled={isMutating} >
                             {isMutating ? "Guardando..." : "Guardar cliente"}
                         </button>
@@ -226,46 +228,52 @@ export default function ClientsClient() {
                         </div>
 
                         <div key={animKey} className={styles.clientList}>
-                            {clients.map((client, index) => (
-                                <div
-                                    key={client.id}
-                                    className={`${styles.clientRow} ${styles.animatedRow}`}
-                                    role="row"
-                                    style={{ "--index": index } as React.CSSProperties} >
-                                    <div className={styles.cellNombre}>
-                                        <div className={styles.clientIdentity}>
-                                            <span className={styles.avatar}>
-                                                {client.nombre.charAt(0).toUpperCase()}
+                            {filteredClients.length > 0 ? (
+                                filteredClients.map((client, index) => (
+                                    <div
+                                        key={client.id}
+                                        className={`${styles.clientRow} ${styles.animatedRow}`}
+                                        role="row"
+                                        style={{ "--index": index } as React.CSSProperties} >
+                                        <div className={styles.cellNombre}>
+                                            <div className={styles.clientIdentity}>
+                                                <span className={styles.avatar}>
+                                                    {client.nombre.charAt(0).toUpperCase()}
+                                                </span>
+                                                <span className={styles.clientName}>{client.nombre}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.cellEmail}>
+                                            <span className={styles.clientEmail}>{client.email}</span>
+                                        </div>
+
+                                        <div className={styles.cellModificadoPor}>
+                                            <span className={styles.metaText}>
+                                                {client.modificador ? client.modificador.nombre : "No modificado"}
                                             </span>
-                                            <span className={styles.clientName}>{client.nombre}</span>
+                                        </div>
+
+                                        <div className={styles.cellModificadoEl}>
+                                            <span className={styles.metaText}>
+                                                {client.updatedAt ? formatDate(client.updatedAt) : "Sin modificar"}
+                                            </span>
+                                        </div>
+
+                                        <div className={styles.cellCreadoPor}>
+                                            <span className={styles.metaText}>{client.creador.nombre}</span>
+                                        </div>
+
+                                        <div className={styles.cellCreadoEl}>
+                                            <span className={styles.dateText}>{formatDate(client.createdAt)}</span>
                                         </div>
                                     </div>
-
-                                    <div className={styles.cellEmail}>
-                                        <span className={styles.clientEmail}>{client.email}</span>
-                                    </div>
-
-                                    <div className={styles.cellModificadoPor}>
-                                        <span className={styles.metaText}>
-                                            {client.modificador ? client.modificador.nombre : "No modificado"}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellModificadoEl}>
-                                        <span className={styles.metaText}>
-                                            {client.updatedAt ? formatDate(client.updatedAt) : "Sin modificar"}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.cellCreadoPor}>
-                                        <span className={styles.metaText}>{client.creador.nombre}</span>
-                                    </div>
-
-                                    <div className={styles.cellCreadoEl}>
-                                        <span className={styles.dateText}>{formatDate(client.createdAt)}</span>
-                                    </div>
+                                ))
+                            ) : (
+                                <div style={{ padding: "24px", textAlign: "center", color: "#8a8375", fontSize: "13px" }}>
+                                    No se encontraron clientes que coincidan con la búsqueda.
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>
