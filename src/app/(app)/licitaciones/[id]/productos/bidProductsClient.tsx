@@ -7,6 +7,7 @@ import styles from "./bidProductsClient.module.css";
 import { FiTrash2, FiPlus, FiArrowRight, FiArrowLeft, FiSearch, FiBox } from "react-icons/fi";
 import { useToast } from "@/lib/useToast";
 
+// --- Types ---
 type BidDetail = {
     id: string;
     estado: string;
@@ -17,7 +18,7 @@ type BidDetail = {
     }>;
 };
 
-type ProductoDisponible = {
+type AvailableProduct = {
     id: string;
     nombre: string;
     descripcion?: string | null;
@@ -26,12 +27,14 @@ type ProductoDisponible = {
 
 type View = "list" | "add-product";
 
+// --- Fetcher ---
 const fetcher = (url: string) =>
     fetch(url).then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
     });
 
+// --- Formatters ---
 const formatPrice = (price: string) => {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -39,52 +42,57 @@ const formatPrice = (price: string) => {
     }).format(Number(price));
 };
 
+// --- Main component ---
 export default function BidProductsClient({ bidId }: { bidId: string }) {
     const router = useRouter();
     const { toast, showToast } = useToast();
+
+    // state
     const [view, setView] = useState<View>("list");
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [productToDelete, setProductToDelete] = useState<{ id: string; nombre: string } | null>(null);
-
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedProduct, setSelectedProduct] = useState<ProductoDisponible | null>(null);
-    const [cantidad, setCantidad] = useState<string>("1");
-    const [precioAcordado, setPrecioAcordado] = useState<string>("");
+    const [selectedProduct, setSelectedProduct] = useState<AvailableProduct | null>(null);
+    const [quantity, setQuantity] = useState<string>("1");
+    const [agreedPrice, setAgreedPrice] = useState<string>("");
     const [addingProduct, setAddingProduct] = useState(false);
 
+    // data
     const { data: bid, isLoading, error } = useSWR<BidDetail>(
         `/api/licitaciones/${bidId}`,
         fetcher
     );
 
-    const { data: productosDisponibles, isLoading: loadingProductos } = useSWR<ProductoDisponible[]>(
+    const { data: availableProducts, isLoading: loadingProducts } = useSWR<AvailableProduct[]>(
         view === "add-product" ? `/api/productos` : null,
         fetcher
     );
 
     const canModifyProducts = bid?.estado === "borrador" || bid?.estado === "activa";
 
-    const productosFiltrados = useMemo(() => {
-        if (!productosDisponibles) return [];
+    // --- Filters ---
+    const filteredProducts = useMemo(() => {
+        if (!availableProducts) return [];
         const q = searchQuery.trim().toLowerCase();
-        if (!q) return productosDisponibles;
-        return productosDisponibles.filter((p) => p.nombre.toLowerCase().includes(q));
-    }, [productosDisponibles, searchQuery]);
+        if (!q) return availableProducts;
+        return availableProducts.filter((p) => p.nombre.toLowerCase().includes(q));
+    }, [availableProducts, searchQuery]);
 
     const totalProducts = bid?.productos.reduce(
         (sum, item) => sum + item.cantidad * Number(item.precioAcordado),
         0
     ) ?? 0;
 
+    // --- Handlers ---
     const confirmDeleteProduct = async () => {
         if (!productToDelete) return;
 
-        const productoId = productToDelete.id;
-        setDeletingId(productoId);
+        const productId = productToDelete.id;
+        setDeletingId(productId);
         setProductToDelete(null);
 
         try {
-            const res = await fetch(`/api/licitaciones/${bidId}/productos/${productoId}`, {
+            const res = await fetch(`/api/licitaciones/${bidId}/productos/${productId}`, {
                 method: "DELETE",
             });
 
@@ -106,8 +114,8 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
 
     const handleAddProduct = async () => {
         if (!selectedProduct) return;
-        const qty = Number(cantidad);
-        const price = Number(precioAcordado);
+        const qty = Number(quantity);
+        const price = Number(agreedPrice);
 
         if (!qty || qty <= 0) {
             showToast("La cantidad debe ser mayor a 0.", "error");
@@ -140,8 +148,8 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
             await mutate(`/api/licitaciones/${bidId}`);
 
             setSelectedProduct(null);
-            setCantidad("1");
-            setPrecioAcordado("");
+            setQuantity("1");
+            setAgreedPrice("");
             setSearchQuery("");
             setView("list");
             showToast("Producto agregado correctamente", "success");
@@ -153,20 +161,21 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
         }
     };
 
-    const handleSelectProduct = (producto: ProductoDisponible) => {
-        setSelectedProduct(producto);
-        setCantidad("1");
-        setPrecioAcordado(producto.precioBase ?? "");
+    const handleSelectProduct = (product: AvailableProduct) => {
+        setSelectedProduct(product);
+        setQuantity("1");
+        setAgreedPrice(product.precioBase ?? "");
     };
 
     const handleGoToAddProduct = () => {
         setView("add-product");
         setSearchQuery("");
         setSelectedProduct(null);
-        setCantidad("1");
-        setPrecioAcordado("");
+        setQuantity("1");
+        setAgreedPrice("");
     };
 
+    // --- Render: loading ---
     if (isLoading) {
         return (
             <div className={styles.secondaryCard}>
@@ -175,6 +184,7 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
         );
     }
 
+    // --- Render: error ---
     if (error || !bid) {
         return (
             <div className={styles.secondaryCard}>
@@ -186,16 +196,23 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
         );
     }
 
+    // --- Render: main ---
     return (
         <div className={styles.secondaryCard}>
+            {/* Toast */}
             {toast && (
-                <div key={toast.id} className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
+                <div
+                    key={toast.id}
+                    className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}
+                >
                     {toast.message}
                 </div>
             )}
 
+            {/* Add product view */}
             {view === "add-product" ? (
                 <>
+                    {/* Header */}
                     <div className={styles.cardHeader}>
                         <div className={styles.headerLeft}>
                             <button className={styles.button} onClick={() => setView("list")}>
@@ -204,8 +221,10 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                         </div>
                     </div>
 
+                    {/* Title */}
                     <div className={styles.titleCard}>Agregar producto</div>
 
+                    {/* Product picker */}
                     {!selectedProduct ? (
                         <div className={`${styles.sectionCard} ${styles.sectionCardGrow}`}>
                             <div className={styles.searchBox}>
@@ -220,34 +239,40 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                                 />
                             </div>
 
-                            {loadingProductos ? (
+                            {loadingProducts ? (
                                 <p className={styles.loadingText}>Cargando productos...</p>
-                            ) : productosFiltrados.length === 0 ? (
+                            ) : filteredProducts.length === 0 ? (
                                 <p className={styles.emptyText}>
-                                    {searchQuery.trim() ? "No se encontraron productos." : "No hay productos disponibles."}
+                                    {searchQuery.trim()
+                                        ? "No se encontraron productos."
+                                        : "No hay productos disponibles."}
                                 </p>
                             ) : (
                                 <div className={styles.pickerList}>
-                                    {productosFiltrados.map((producto) => (
+                                    {filteredProducts.map((product) => (
                                         <button
-                                            key={producto.id}
+                                            key={product.id}
                                             className={styles.pickerItem}
-                                            onClick={() => handleSelectProduct(producto)}
+                                            onClick={() => handleSelectProduct(product)}
                                         >
                                             <div className={styles.pickerItemLeft}>
                                                 <span className={styles.pickerIcon}>
                                                     <FiBox size={18} />
                                                 </span>
                                                 <div className={styles.pickerItemInfo}>
-                                                    <span className={styles.pickerItemName}>{producto.nombre}</span>
-                                                    {producto.descripcion && (
-                                                        <span className={styles.pickerItemDesc}>{producto.descripcion}</span>
+                                                    <span className={styles.pickerItemName}>
+                                                        {product.nombre}
+                                                    </span>
+                                                    {product.descripcion && (
+                                                        <span className={styles.pickerItemDesc}>
+                                                            {product.descripcion}
+                                                        </span>
                                                     )}
                                                 </div>
                                             </div>
-                                            {producto.precioBase && (
+                                            {product.precioBase && (
                                                 <span className={styles.pickerItemPrice}>
-                                                    Precio base: {formatPrice(producto.precioBase)}
+                                                    Precio base: {formatPrice(product.precioBase)}
                                                 </span>
                                             )}
                                         </button>
@@ -256,6 +281,7 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                             )}
                         </div>
                     ) : (
+                        /* Selected product form */
                         <div className={`${styles.sectionCard} ${styles.sectionCardGrow}`}>
                             <button
                                 className={styles.pickerItem}
@@ -267,15 +293,22 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                                         <FiBox size={18} />
                                     </span>
                                     <div className={styles.pickerItemInfo}>
-                                        <span className={styles.pickerItemName}>{selectedProduct.nombre}</span>
+                                        <span className={styles.pickerItemName}>
+                                            {selectedProduct.nombre}
+                                        </span>
                                         {selectedProduct.descripcion && (
-                                            <span className={styles.pickerItemDesc}>{selectedProduct.descripcion}</span>
+                                            <span className={styles.pickerItemDesc}>
+                                                {selectedProduct.descripcion}
+                                            </span>
                                         )}
                                     </div>
                                 </div>
                                 <div className={styles.pickerItemRight}>
                                     <span className={styles.pickerItemPrice}>
-                                        Precio base: {selectedProduct.precioBase ? formatPrice(selectedProduct.precioBase) : "N/D"}
+                                        Precio base:{" "}
+                                        {selectedProduct.precioBase
+                                            ? formatPrice(selectedProduct.precioBase)
+                                            : "N/D"}
                                     </span>
                                     <FiArrowRight size={14} />
                                 </div>
@@ -287,19 +320,21 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                                     <input
                                         type="number"
                                         min="1"
-                                        value={cantidad}
-                                        onChange={(e) => setCantidad(e.target.value)}
+                                        value={quantity}
+                                        onChange={(e) => setQuantity(e.target.value)}
                                         className={styles.formInput}
                                     />
                                 </div>
                                 <div className={styles.formField}>
-                                    <label className={styles.formLabel}>Precio acordado (USD)</label>
+                                    <label className={styles.formLabel}>
+                                        Precio acordado (USD)
+                                    </label>
                                     <input
                                         type="number"
                                         min="0"
                                         step="0.01"
-                                        value={precioAcordado}
-                                        onChange={(e) => setPrecioAcordado(e.target.value)}
+                                        value={agreedPrice}
+                                        onChange={(e) => setAgreedPrice(e.target.value)}
                                         className={styles.formInput}
                                         placeholder="0.00"
                                     />
@@ -307,30 +342,46 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                             </div>
 
                             <div className={styles.sectionHeaderRow}>
-                                <button className={styles.addButton} onClick={handleAddProduct} disabled={addingProduct}>
+                                <button
+                                    className={styles.addButton}
+                                    onClick={handleAddProduct}
+                                    disabled={addingProduct}
+                                >
                                     <FiPlus size={14} />
-                                    {addingProduct ? "Agregando..." : "Agregar a la licitación"}
+                                    {addingProduct
+                                        ? "Agregando..."
+                                        : "Agregar a la licitación"}
                                 </button>
                             </div>
                         </div>
                     )}
                 </>
             ) : (
+                /* List view */
                 <>
+                    {/* Header */}
                     <div className={styles.cardHeader}>
                         <div className={styles.headerLeft}>
-                            <button className={styles.button} onClick={() => router.push(`/licitaciones/${bidId}`)}>
+                            <button
+                                className={styles.button}
+                                onClick={() => router.push(`/licitaciones/${bidId}`)}
+                            >
                                 <FiArrowLeft size={16} /> Volver al detalle
                             </button>
                         </div>
                     </div>
 
+                    {/* Title */}
                     <div className={styles.titleCard}>Productos de la licitación</div>
 
+                    {/* Products table */}
                     <div className={`${styles.sectionCard} ${styles.sectionCardGrow}`}>
                         <div className={styles.sectionHeaderRow}>
                             {canModifyProducts && (
-                                <button className={styles.addButton} onClick={handleGoToAddProduct}>
+                                <button
+                                    className={styles.addButton}
+                                    onClick={handleGoToAddProduct}
+                                >
                                     <FiPlus size={14} />
                                     Agregar producto
                                 </button>
@@ -338,12 +389,17 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                         </div>
 
                         {bid.productos.length === 0 ? (
-                            <p className={styles.emptyText}>No se han agregado productos.</p>
+                            <p className={styles.emptyText}>
+                                No se han agregado productos.
+                            </p>
                         ) : (
                             <div className={styles.tableCard}>
                                 <div className={styles.tableBody}>
                                     <div className={styles.productTableContainer}>
-                                        <div className={styles.productTableHeader} role="row">
+                                        <div
+                                            className={styles.productTableHeader}
+                                            role="row"
+                                        >
                                             <span>Producto</span>
                                             <span>Cantidad</span>
                                             <span>Precio acordado</span>
@@ -352,33 +408,81 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                                         </div>
                                         <div className={styles.productTableList}>
                                             {bid.productos.map((item) => (
-                                                <div key={item.producto.id} className={styles.productTableRow} role="row">
-                                                    <div className={styles.cellProducto}>
-                                                        <span>{item.producto.nombre}</span>
+                                                <div
+                                                    key={item.producto.id}
+                                                    className={styles.productTableRow}
+                                                    role="row"
+                                                >
+                                                    <div
+                                                        className={styles.cellProducto}
+                                                    >
+                                                        <span>
+                                                            {item.producto.nombre}
+                                                        </span>
                                                     </div>
-                                                    <div className={styles.cellCantidad}>
+                                                    <div
+                                                        className={styles.cellCantidad}
+                                                    >
                                                         <span>{item.cantidad}</span>
                                                     </div>
-                                                    <div className={styles.cellPrecio}>
-                                                        <span>{formatPrice(item.precioAcordado)}</span>
-                                                    </div>
-                                                    <div className={styles.cellSubtotal}>
+                                                    <div
+                                                        className={styles.cellPrecio}
+                                                    >
                                                         <span>
-                                                            {formatPrice(String(item.cantidad * Number(item.precioAcordado)))}
+                                                            {formatPrice(
+                                                                item.precioAcordado
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        className={
+                                                            styles.cellSubtotal
+                                                        }
+                                                    >
+                                                        <span>
+                                                            {formatPrice(
+                                                                String(
+                                                                    item.cantidad *
+                                                                    Number(
+                                                                        item.precioAcordado
+                                                                    )
+                                                                )
+                                                            )}
                                                         </span>
                                                     </div>
                                                     {canModifyProducts && (
-                                                        <div className={styles.cellActions}>
+                                                        <div
+                                                            className={
+                                                                styles.cellActions
+                                                            }
+                                                        >
                                                             <button
-                                                                className={styles.deleteButton}
-                                                                onClick={() =>
-                                                                    setProductToDelete({ id: item.producto.id, nombre: item.producto.nombre })
+                                                                className={
+                                                                    styles.deleteButton
                                                                 }
-                                                                disabled={deletingId === item.producto.id}
+                                                                onClick={() =>
+                                                                    setProductToDelete(
+                                                                        {
+                                                                            id: item
+                                                                                .producto
+                                                                                .id,
+                                                                            nombre: item
+                                                                                .producto
+                                                                                .nombre,
+                                                                        }
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    deletingId ===
+                                                                    item.producto.id
+                                                                }
                                                                 title="Eliminar producto"
                                                             >
                                                                 <FiTrash2 size={14} />
-                                                                {deletingId === item.producto.id ? "Eliminando..." : "Eliminar"}
+                                                                {deletingId ===
+                                                                    item.producto.id
+                                                                    ? "Eliminando..."
+                                                                    : "Eliminar"}
                                                             </button>
                                                         </div>
                                                     )}
@@ -389,29 +493,42 @@ export default function BidProductsClient({ bidId }: { bidId: string }) {
                                 </div>
                                 <div className={styles.totalRow}>
                                     <span>Total</span>
-                                    <span>{formatPrice(String(totalProducts))}</span>
+                                    <span>
+                                        {formatPrice(String(totalProducts))}
+                                    </span>
                                 </div>
                             </div>
                         )}
                     </div>
 
+                    {/* Delete modal */}
                     {productToDelete && (
                         <div className={styles.modalOverlay}>
                             <div className={styles.modalCard}>
-                                <div className={styles.modalTitle}>Eliminar producto</div>
+                                <div className={styles.modalTitle}>
+                                    Eliminar producto
+                                </div>
 
                                 <div className={styles.modalTextCard}>
                                     <p className={styles.modalText}>
-                                        ¿Estás seguro de que deseas eliminar <strong>{productToDelete.nombre}</strong> de la
-                                        licitación? Esta acción no se puede deshacer.
+                                        ¿Estás seguro de que deseas eliminar{" "}
+                                        <strong>{productToDelete.nombre}</strong>{" "}
+                                        de la licitación? Esta acción no se puede
+                                        deshacer.
                                     </p>
                                 </div>
 
                                 <div className={styles.modalActions}>
-                                    <button className={styles.modalCancelButton} onClick={() => setProductToDelete(null)}>
+                                    <button
+                                        className={styles.modalCancelButton}
+                                        onClick={() => setProductToDelete(null)}
+                                    >
                                         Cancelar
                                     </button>
-                                    <button className={styles.modalConfirmButton} onClick={confirmDeleteProduct}>
+                                    <button
+                                        className={styles.modalConfirmButton}
+                                        onClick={confirmDeleteProduct}
+                                    >
                                         Confirmar
                                     </button>
                                 </div>

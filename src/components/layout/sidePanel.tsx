@@ -10,7 +10,6 @@ import {
     Package,
     FileSpreadsheet,
     UserCheck,
-    Settings,
     Menu,
     LogOut,
 } from "lucide-react";
@@ -46,7 +45,6 @@ const NAV_SECTIONS: Array<{ title: string | null; items: NavItem[] }> = [
         ],
     },
     { title: "Sistema", items: [{ label: "Usuarios", href: "/usuarios", icon: UserCheck }] },
-    { title: null, items: [{ label: "Configuración", href: "/configuracion", icon: Settings }] },
 ];
 
 export default function SidePanel({ isExpanded, setIsExpanded, user }: SidePanelProps) {

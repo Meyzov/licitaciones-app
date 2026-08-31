@@ -7,6 +7,7 @@ import { useToast } from "@/lib/useToast";
 import { FiRefreshCw, FiArrowLeft, FiPlus } from "react-icons/fi";
 import styles from "./clientsClient.module.css";
 
+// --- Types ---
 type Client = {
     id: string;
     nombre: string;
@@ -17,17 +18,20 @@ type Client = {
     modificador: { nombre: string } | null;
 };
 
-const fetcher = (url: string) => fetch(url).then((res) => {
-    if (!res.ok) throw new Error("Failed to fetch clients");
-    return res.json();
-});
+// --- Fetchers ---
+const fetcher = (url: string) =>
+    fetch(url).then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch clients");
+        return res.json();
+    });
 
-const mutationFetcher = async (url: string, { arg }: { arg: { name: string; email: string } }) => {
+const mutationFetcher = async (
+    url: string,
+    { arg }: { arg: { name: string; email: string } }
+) => {
     const response = await fetch(url, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(arg),
     });
 
@@ -40,6 +44,7 @@ const mutationFetcher = async (url: string, { arg }: { arg: { name: string; emai
     return data;
 };
 
+// --- Hooks ---
 const useIsMounted = () => {
     return useSyncExternalStore(
         () => () => { },
@@ -48,20 +53,25 @@ const useIsMounted = () => {
     );
 };
 
+// --- Formatters ---
 const formatDate = (isoDate: string) => {
-    return new Date(isoDate).toLocaleString("es-ES", {
+    const date = new Date(isoDate);
+    return new Intl.DateTimeFormat("es-ES", {
         day: "2-digit",
         month: "short",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-    });
+        hour12: false,
+    }).format(date);
 };
 
+// --- Main component ---
 export default function ClientsClient() {
+    // state
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
     const isMounted = useIsMounted();
     const { toast, showToast } = useToast();
     const [formData, setFormData] = useState({
@@ -69,15 +79,28 @@ export default function ClientsClient() {
         email: "",
     });
 
-    const { data: clients = [], isValidating, mutate: refreshClients } = useSWR<Client[]>(
-        isMounted ? "/api/clientes" : null,
-        fetcher
-    );
+    // data
+    const {
+        data: clients = [],
+        isValidating,
+        mutate: refreshClients,
+    } = useSWR<Client[]>(isMounted ? "/api/clientes" : null, fetcher);
 
-    const { trigger: createClient, isMutating } = useSWRMutation("/api/clientes", mutationFetcher);
+    const { trigger: createClient, isMutating } = useSWRMutation(
+        "/api/clientes",
+        mutationFetcher
+    );
 
     const isLoadingState = isMounted ? isValidating : false;
 
+    // filters
+    const filteredClients = clients.filter(
+        (client) =>
+            client.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            client.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // handlers
     const handleRefresh = async () => {
         await refreshClients();
         setAnimKey((prev) => prev + 1);
@@ -99,37 +122,43 @@ export default function ClientsClient() {
             setAnimKey((prev) => prev + 1);
             showToast("Cliente creado exitosamente", "success");
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+            const errorMessage =
+                error instanceof Error ? error.message : "Error desconocido";
             showToast(errorMessage, "error");
         }
     };
 
-    const filteredClients = clients.filter((client) =>
-        client.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
+    // render
     return (
         <div className={styles.secondaryCard}>
+            {/* Toast */}
             {toast && (
-                <div key={toast.id} className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
+                <div
+                    key={toast.id}
+                    className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}
+                >
                     {toast.message}
                 </div>
             )}
 
+            {/* Header */}
             <div className={styles.cardHeader}>
                 {isCreating ? (
                     <div className={styles.headerLeft}>
-                        <button className={`${styles.button}`} onClick={() => setIsCreating(false)}>
-                            <FiArrowLeft />
-                            Volver
+                        <button
+                            className={styles.button}
+                            onClick={() => setIsCreating(false)}
+                        >
+                            <FiArrowLeft /> Volver
                         </button>
                         <div className={styles.titleCard}>Nuevo cliente</div>
                     </div>
                 ) : (
                     <>
                         <div className={styles.headerLeft}>
-                            <div className={styles.titleCard}>Listado de clientes</div>
+                            <div className={styles.titleCard}>
+                                Listado de clientes
+                            </div>
                             <button
                                 className={styles.button}
                                 onClick={handleRefresh}
@@ -137,7 +166,10 @@ export default function ClientsClient() {
                                 title={isLoadingState ? "Cargando..." : "Refrescar"}
                             >
                                 <FiRefreshCw
-                                    className={`${isLoadingState ? styles.refreshIconSpinning : ""}`}
+                                    className={`${isLoadingState
+                                            ? styles.refreshIconSpinning
+                                            : ""
+                                        }`}
                                 />
                                 <span className={styles.refreshButtonText}>
                                     {isLoadingState ? "Cargando..." : "Refrescar"}
@@ -145,35 +177,42 @@ export default function ClientsClient() {
                             </button>
                         </div>
 
-                        <button className={`${styles.button} ${styles.buttonSuccess}`} onClick={() => setIsCreating(true)}>
-                            <FiPlus />
-                            Nuevo cliente
+                        <button
+                            className={`${styles.button} ${styles.buttonSuccess}`}
+                            onClick={() => setIsCreating(true)}
+                        >
+                            <FiPlus /> Nuevo cliente
                         </button>
                     </>
                 )}
             </div>
 
+            {/* Search */}
             {!isCreating && (
                 <div className={styles.searchContainer}>
                     <input
                         type="text"
                         placeholder="Buscar por nombre o correo electrónico..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className={styles.formInput}
                     />
                 </div>
             )}
 
+            {/* Create form */}
             {isCreating ? (
                 <>
                     <div className={styles.formCard}>
                         <form
                             id="client-form"
                             onSubmit={handleSubmitClient}
-                            className={styles.formContainer} >
+                            className={styles.formContainer}
+                        >
                             <div className={styles.formGroup}>
-                                <label className={styles.formLabel}>Nombre del cliente</label>
+                                <label className={styles.formLabel}>
+                                    Nombre del cliente
+                                </label>
                                 <input
                                     type="text"
                                     name="name"
@@ -181,11 +220,14 @@ export default function ClientsClient() {
                                     onChange={handleInputChange}
                                     placeholder="Ej. Constructora Delta"
                                     className={styles.formInput}
-                                    required />
+                                    required
+                                />
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label className={styles.formLabel}>Correo electrónico</label>
+                                <label className={styles.formLabel}>
+                                    Correo electrónico
+                                </label>
                                 <input
                                     type="email"
                                     name="email"
@@ -193,7 +235,8 @@ export default function ClientsClient() {
                                     onChange={handleInputChange}
                                     placeholder="contacto@empresa.com"
                                     className={styles.formInput}
-                                    required />
+                                    required
+                                />
                             </div>
                         </form>
                     </div>
@@ -203,19 +246,22 @@ export default function ClientsClient() {
                             type="button"
                             className={`${styles.button} ${styles.buttonDanger}`}
                             onClick={() => setIsCreating(false)}
-                            disabled={isMutating} >
+                            disabled={isMutating}
+                        >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             form="client-form"
                             className={`${styles.button} ${styles.buttonSuccess}`}
-                            disabled={isMutating} >
+                            disabled={isMutating}
+                        >
                             {isMutating ? "Guardando..." : "Guardar cliente"}
                         </button>
                     </div>
                 </>
             ) : (
+                /* Table */
                 <div className={styles.tableCard}>
                     <div className={styles.tableScrollWrapper}>
                         <div className={styles.tableHeader} role="row">
@@ -234,44 +280,61 @@ export default function ClientsClient() {
                                         key={client.id}
                                         className={`${styles.clientRow} ${styles.animatedRow}`}
                                         role="row"
-                                        style={{ "--index": index } as React.CSSProperties} >
+                                        style={
+                                            { "--index": index } as React.CSSProperties
+                                        }
+                                    >
                                         <div className={styles.cellNombre}>
                                             <div className={styles.clientIdentity}>
                                                 <span className={styles.avatar}>
-                                                    {client.nombre.charAt(0).toUpperCase()}
+                                                    {client.nombre
+                                                        .charAt(0)
+                                                        .toUpperCase()}
                                                 </span>
-                                                <span className={styles.clientName}>{client.nombre}</span>
+                                                <span className={styles.clientName}>
+                                                    {client.nombre}
+                                                </span>
                                             </div>
                                         </div>
 
                                         <div className={styles.cellEmail}>
-                                            <span className={styles.clientEmail}>{client.email}</span>
+                                            <span className={styles.clientEmail}>
+                                                {client.email}
+                                            </span>
                                         </div>
 
                                         <div className={styles.cellModificadoPor}>
                                             <span className={styles.metaText}>
-                                                {client.modificador ? client.modificador.nombre : "No modificado"}
+                                                {client.modificador
+                                                    ? client.modificador.nombre
+                                                    : "No modificado"}
                                             </span>
                                         </div>
 
                                         <div className={styles.cellModificadoEl}>
                                             <span className={styles.metaText}>
-                                                {client.updatedAt ? formatDate(client.updatedAt) : "Sin modificar"}
+                                                {client.updatedAt
+                                                    ? formatDate(client.updatedAt)
+                                                    : "Sin modificar"}
                                             </span>
                                         </div>
 
                                         <div className={styles.cellCreadoPor}>
-                                            <span className={styles.metaText}>{client.creador.nombre}</span>
+                                            <span className={styles.metaText}>
+                                                {client.creador.nombre}
+                                            </span>
                                         </div>
 
                                         <div className={styles.cellCreadoEl}>
-                                            <span className={styles.dateText}>{formatDate(client.createdAt)}</span>
+                                            <span className={styles.dateText}>
+                                                {formatDate(client.createdAt)}
+                                            </span>
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <div style={{ padding: "24px", textAlign: "center", color: "#8a8375", fontSize: "13px" }}>
-                                    No se encontraron clientes que coincidan con la búsqueda.
+                                <div className={styles.emptyStateCompact}>
+                                    No se encontraron clientes.
                                 </div>
                             )}
                         </div>

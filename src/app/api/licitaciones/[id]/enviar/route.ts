@@ -13,13 +13,14 @@ const formatPrice = (price: number) => {
     }).format(price);
 };
 
-const formatDate = (date: Date) => {
+const formatDate = (date: Date, timeZone: string) => {
     return date.toLocaleString("es-ES", {
         day: "2-digit",
         month: "long",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
+        timeZone,
     });
 };
 
@@ -34,6 +35,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             );
         }
 
+        const { timeZone } = await request.json();
         const { id: bidId } = await params;
 
         const bid = await prisma.licitacion.findUnique({
@@ -88,7 +90,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                 fechaLimite: bid.fechaLimite,
                 productos: bid.productos,
                 formatPrice,
-                formatDate,
+                formatDate: (date: Date) => formatDate(date, timeZone),
             }),
             attachments: [
                 {

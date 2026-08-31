@@ -4,9 +4,10 @@ import { useState, useSyncExternalStore, useMemo } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
-import { FiRefreshCw, FiArrowLeft, FiPlus} from "react-icons/fi";
+import { FiRefreshCw, FiArrowLeft, FiPlus } from "react-icons/fi";
 import styles from "./productsClient.module.css";
 
+// --- Types ---
 type Product = {
     id: string;
     nombre: string;
@@ -17,17 +18,20 @@ type Product = {
     modificador: { nombre: string } | null;
 };
 
-const fetcher = (url: string) => fetch(url).then((res) => {
-    if (!res.ok) throw new Error("Failed to fetch products");
-    return res.json();
-});
+// --- Fetchers ---
+const fetcher = (url: string) =>
+    fetch(url).then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch products");
+        return res.json();
+    });
 
-const mutationFetcher = async (url: string, { arg }: { arg: { name: string; basePrice: string } }) => {
+const mutationFetcher = async (
+    url: string,
+    { arg }: { arg: { name: string; basePrice: string } }
+) => {
     const response = await fetch(url, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(arg),
     });
 
@@ -40,6 +44,7 @@ const mutationFetcher = async (url: string, { arg }: { arg: { name: string; base
     return data;
 };
 
+// --- Hooks ---
 const useIsMounted = () => {
     return useSyncExternalStore(
         () => () => { },
@@ -48,14 +53,17 @@ const useIsMounted = () => {
     );
 };
 
+// --- Formatters ---
 const formatDate = (isoDate: string) => {
-    return new Date(isoDate).toLocaleString("es-ES", {
+    const date = new Date(isoDate);
+    return new Intl.DateTimeFormat("es-ES", {
         day: "2-digit",
         month: "short",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-    });
+        hour12: false,
+    }).format(date);
 };
 
 const formatPrice = (price: string) => {
@@ -65,7 +73,9 @@ const formatPrice = (price: string) => {
     }).format(Number(price));
 };
 
+// --- Main component ---
 export default function ProductsClient() {
+    // state
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
     const isMounted = useIsMounted();
@@ -76,21 +86,30 @@ export default function ProductsClient() {
         basePrice: "",
     });
 
-    const { data: products = [], isValidating, mutate: refreshProducts } = useSWR<Product[]>(
-        isMounted ? "/api/productos" : null,
-        fetcher
-    );
+    // data
+    const {
+        data: products = [],
+        isValidating,
+        mutate: refreshProducts,
+    } = useSWR<Product[]>(isMounted ? "/api/productos" : null, fetcher);
 
-    const { trigger: createProduct, isMutating } = useSWRMutation("/api/productos", mutationFetcher);
+    const { trigger: createProduct, isMutating } = useSWRMutation(
+        "/api/productos",
+        mutationFetcher
+    );
 
     const isLoadingState = isMounted ? isValidating : false;
 
+    // filters
     const filteredProducts = useMemo(() => {
         if (!searchQuery.trim()) return products;
         const query = searchQuery.trim().toLowerCase();
-        return products.filter((product) => product.nombre.toLowerCase().includes(query));
+        return products.filter((product) =>
+            product.nombre.toLowerCase().includes(query)
+        );
     }, [products, searchQuery]);
 
+    // handlers
     const handleRefresh = async () => {
         await refreshProducts();
         setAnimKey((prev) => prev + 1);
@@ -112,19 +131,26 @@ export default function ProductsClient() {
             setAnimKey((prev) => prev + 1);
             showToast("Producto creado exitosamente", "success");
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+            const errorMessage =
+                error instanceof Error ? error.message : "Error desconocido";
             showToast(errorMessage, "error");
         }
     };
 
+    // render
     return (
         <div className={styles.secondaryCard}>
+            {/* Toast */}
             {toast && (
-                <div key={toast.id} className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
+                <div
+                    key={toast.id}
+                    className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}
+                >
                     {toast.message}
                 </div>
             )}
 
+            {/* Header */}
             <div className={styles.cardHeader}>
                 {isCreating ? (
                     <div className={styles.headerLeft}>
@@ -144,7 +170,8 @@ export default function ProductsClient() {
                                 title={isLoadingState ? "Cargando..." : "Refrescar"}
                             >
                                 <FiRefreshCw
-                                    className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""}`}
+                                    className={`${styles.refreshIcon} ${isLoadingState ? styles.refreshIconSpinning : ""
+                                        }`}
                                 />
                                 <span className={styles.refreshButtonText}>
                                     {isLoadingState ? "Cargando..." : "Refrescar"}
@@ -152,13 +179,17 @@ export default function ProductsClient() {
                             </button>
                         </div>
 
-                        <button className={`${styles.button} ${styles.buttonGreen}`} onClick={() => setIsCreating(true)}>
+                        <button
+                            className={`${styles.button} ${styles.buttonGreen}`}
+                            onClick={() => setIsCreating(true)}
+                        >
                             <FiPlus className={styles.refreshIcon} /> Nuevo producto
                         </button>
                     </>
                 )}
             </div>
 
+            {/* Search bar (list view only) */}
             {!isCreating && (
                 <div className={styles.searchContainer}>
                     <input
@@ -171,13 +202,15 @@ export default function ProductsClient() {
                 </div>
             )}
 
+            {/* Create form */}
             {isCreating ? (
                 <>
                     <div className={styles.formCard}>
                         <form
                             id="product-form"
                             onSubmit={handleSubmitProduct}
-                            className={styles.formContainer} >
+                            className={styles.formContainer}
+                        >
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>Nombre del producto</label>
                                 <input
@@ -187,7 +220,8 @@ export default function ProductsClient() {
                                     onChange={handleInputChange}
                                     placeholder="Ej. Licencia de software anual"
                                     className={styles.formInput}
-                                    required />
+                                    required
+                                />
                             </div>
 
                             <div className={styles.formGroup}>
@@ -201,7 +235,8 @@ export default function ProductsClient() {
                                     step="0.01"
                                     min="0.01"
                                     className={styles.formInput}
-                                    required />
+                                    required
+                                />
                             </div>
                         </form>
                     </div>
@@ -211,19 +246,22 @@ export default function ProductsClient() {
                             type="button"
                             className={`${styles.button} ${styles.buttonRed}`}
                             onClick={() => setIsCreating(false)}
-                            disabled={isMutating} >
+                            disabled={isMutating}
+                        >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             form="product-form"
                             className={`${styles.button} ${styles.buttonGreen}`}
-                            disabled={isMutating} >
+                            disabled={isMutating}
+                        >
                             {isMutating ? "Guardando..." : "Guardar producto"}
                         </button>
                     </div>
                 </>
             ) : (
+                /* Products table */
                 <div className={styles.tableCard}>
                     <div className={styles.tableScrollWrapper}>
                         <div className={styles.tableHeader} role="row">
@@ -237,45 +275,60 @@ export default function ProductsClient() {
 
                         <div key={animKey} className={styles.productList}>
                             {filteredProducts.length === 0 ? (
-                                <div className={styles.emptyState}>No se encontraron productos.</div>
+                                <div className={styles.emptyState}>
+                                    No se encontraron productos.
+                                </div>
                             ) : (
                                 filteredProducts.map((product, index) => (
                                     <div
                                         key={product.id}
                                         className={`${styles.productRow} ${styles.animatedRow}`}
                                         role="row"
-                                        style={{ "--index": index } as React.CSSProperties} >
+                                        style={{ "--index": index } as React.CSSProperties}
+                                    >
                                         <div className={styles.cellNombre}>
                                             <div className={styles.productIdentity}>
                                                 <span className={styles.avatar}>
                                                     {product.nombre.charAt(0).toUpperCase()}
                                                 </span>
-                                                <span className={styles.productName}>{product.nombre}</span>
+                                                <span className={styles.productName}>
+                                                    {product.nombre}
+                                                </span>
                                             </div>
                                         </div>
 
                                         <div className={styles.cellPrecioBase}>
-                                            <span className={styles.priceText}>{formatPrice(product.precioBase)}</span>
+                                            <span className={styles.priceText}>
+                                                {formatPrice(product.precioBase)}
+                                            </span>
                                         </div>
 
                                         <div className={styles.cellModificadoPor}>
                                             <span className={styles.metaText}>
-                                                {product.modificador ? product.modificador.nombre : "No modificado"}
+                                                {product.modificador
+                                                    ? product.modificador.nombre
+                                                    : "No modificado"}
                                             </span>
                                         </div>
 
                                         <div className={styles.cellModificadoEl}>
                                             <span className={styles.metaText}>
-                                                {product.updatedAt ? formatDate(product.updatedAt) : "Sin modificar"}
+                                                {product.updatedAt
+                                                    ? formatDate(product.updatedAt)
+                                                    : "Sin modificar"}
                                             </span>
                                         </div>
 
                                         <div className={styles.cellCreadoPor}>
-                                            <span className={styles.metaText}>{product.creador.nombre}</span>
+                                            <span className={styles.metaText}>
+                                                {product.creador.nombre}
+                                            </span>
                                         </div>
 
                                         <div className={styles.cellCreadoEl}>
-                                            <span className={styles.dateText}>{formatDate(product.createdAt)}</span>
+                                            <span className={styles.dateText}>
+                                                {formatDate(product.createdAt)}
+                                            </span>
                                         </div>
                                     </div>
                                 ))

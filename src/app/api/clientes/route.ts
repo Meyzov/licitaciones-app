@@ -92,6 +92,7 @@ export async function POST(request: Request) {
                 nombre: normalizedName,
                 email: normalizedEmail,
                 createdBy: currentUser.id,
+                createdAt: undefined
             },
         });
 

@@ -7,6 +7,7 @@ import styles from "./bidPaymentsClient.module.css";
 import { FiArrowLeft, FiPlus, FiDollarSign } from "react-icons/fi";
 import { useToast } from "@/lib/useToast";
 
+// --- Types ---
 type PaymentsData = {
     estado: string;
     totalFacturado: number;
@@ -20,12 +21,14 @@ type PaymentsData = {
     }>;
 };
 
+// --- Fetcher ---
 const fetcher = (url: string) =>
     fetch(url).then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
     });
 
+// --- Formatters ---
 const formatPrice = (price: number | string) => {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -34,21 +37,27 @@ const formatPrice = (price: number | string) => {
 };
 
 const formatDate = (isoDate: string) => {
-    return new Date(isoDate).toLocaleString("es-ES", {
+    const date = new Date(isoDate);
+    return new Intl.DateTimeFormat("es-ES", {
         day: "2-digit",
         month: "short",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-    });
+        hour12: false,
+    }).format(date);
 };
 
+// --- Main component ---
 export default function BidPaymentsClient({ bidId }: { bidId: string }) {
     const router = useRouter();
     const { toast, showToast } = useToast();
-    const [montoInput, setMontoInput] = useState("");
+
+    // state
+    const [amountInput, setAmountInput] = useState("");
     const [registeringPayment, setRegisteringPayment] = useState(false);
 
+    // data
     const { data, isLoading, error } = useSWR<PaymentsData>(
         `/api/licitaciones/${bidId}/pagos`,
         fetcher
@@ -56,12 +65,13 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
 
     const canRegisterPayment = data?.estado === "por_cobrar";
 
+    // --- Handlers ---
     const handleRegisterPayment = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
-        const monto = Number(montoInput);
+        const amount = Number(amountInput);
 
-        if (!monto || monto <= 0) {
+        if (!amount || amount <= 0) {
             showToast("El monto debe ser mayor a 0.", "error");
             return;
         }
@@ -72,7 +82,7 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
             const res = await fetch(`/api/licitaciones/${bidId}/pagos`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ monto }),
+                body: JSON.stringify({ monto: amount }),
             });
 
             const responseData = await res.json().catch(() => ({}));
@@ -84,7 +94,7 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
             await mutate(`/api/licitaciones/${bidId}/pagos`);
             await mutate(`/api/licitaciones/${bidId}`);
 
-            setMontoInput("");
+            setAmountInput("");
             showToast(responseData.message || "Pago registrado exitosamente", "success");
         } catch (err) {
             const message = err instanceof Error ? err.message : "Error al registrar el pago";
@@ -94,6 +104,7 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
         }
     };
 
+    // --- Render: loading ---
     if (isLoading) {
         return (
             <div className={styles.secondaryCard}>
@@ -102,6 +113,7 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
         );
     }
 
+    // --- Render: error ---
     if (error || !data) {
         return (
             <div className={styles.secondaryCard}>
@@ -113,41 +125,59 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
         );
     }
 
+    // --- Render: main ---
     return (
         <div className={styles.secondaryCard}>
+            {/* Toast */}
             {toast && (
-                <div key={toast.id} className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}>
+                <div
+                    key={toast.id}
+                    className={`${styles.toast} ${styles[`toast_${toast.type}`]}`}
+                >
                     {toast.message}
                 </div>
             )}
 
+            {/* Header */}
             <div className={styles.cardHeader}>
                 <div className={styles.headerLeft}>
-                    <button className={styles.button} onClick={() => router.push(`/licitaciones/${bidId}`)}>
+                    <button
+                        className={styles.button}
+                        onClick={() => router.push(`/licitaciones/${bidId}`)}
+                    >
                         <FiArrowLeft size={16} /> Volver al detalle
                     </button>
                 </div>
             </div>
 
+            {/* Title */}
             <div className={styles.titleCard}>Pagos de la licitación</div>
 
+            {/* Summary */}
             <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
                 <div className={styles.summaryGrid}>
                     <div className={styles.infoCard}>
                         <span className={styles.infoLabel}>Total facturado</span>
-                        <span className={styles.infoValue}>{formatPrice(data.totalFacturado)}</span>
+                        <span className={styles.infoValue}>
+                            {formatPrice(data.totalFacturado)}
+                        </span>
                     </div>
                     <div className={styles.infoCard}>
                         <span className={styles.infoLabel}>Total pagado</span>
-                        <span className={styles.infoValue}>{formatPrice(data.totalPagado)}</span>
+                        <span className={styles.infoValue}>
+                            {formatPrice(data.totalPagado)}
+                        </span>
                     </div>
                     <div className={`${styles.infoCard} ${styles.infoCardHighlight}`}>
                         <span className={styles.infoLabel}>Saldo pendiente</span>
-                        <span className={styles.infoValue}>{formatPrice(data.saldoPendiente)}</span>
+                        <span className={styles.infoValue}>
+                            {formatPrice(data.saldoPendiente)}
+                        </span>
                     </div>
                 </div>
             </div>
 
+            {/* Payment form */}
             {canRegisterPayment && (
                 <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
                     <div className={styles.sectionHeaderRow}>
@@ -164,8 +194,8 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
                                     min="0.01"
                                     step="0.01"
                                     max={data.saldoPendiente}
-                                    value={montoInput}
-                                    onChange={(e) => setMontoInput(e.target.value)}
+                                    value={amountInput}
+                                    onChange={(e) => setAmountInput(e.target.value)}
                                     className={styles.formInput}
                                     placeholder="0.00"
                                     required
@@ -185,6 +215,7 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
                 </div>
             )}
 
+            {/* Payments list */}
             <div className={`${styles.sectionCard} ${styles.sectionCardGrow}`}>
                 <div className={styles.sectionHeaderRow}>
                     <span className={styles.sectionTitle}>
@@ -198,7 +229,9 @@ export default function BidPaymentsClient({ bidId }: { bidId: string }) {
                     <div className={styles.paymentsList}>
                         {data.pagos.map((pago) => (
                             <div key={pago.id} className={styles.paymentItem}>
-                                <span className={styles.paymentAmount}>{formatPrice(pago.monto)}</span>
+                                <span className={styles.paymentAmount}>
+                                    {formatPrice(pago.monto)}
+                                </span>
                                 <span className={styles.paymentMeta}>
                                     {pago.creador.nombre} · {formatDate(pago.fecha)}
                                 </span>

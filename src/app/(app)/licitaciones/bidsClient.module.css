@@ -1,3 +1,4 @@
+/* --- Layout --- */
 .baseCard {
     background-color: #f3efe6;
     border-radius: 12px;
@@ -35,6 +36,7 @@
     overflow: hidden;
 }
 
+/* --- Buttons --- */
 .titleCard,
 .button {
     background-color: #f3efe6;
@@ -86,6 +88,7 @@
     background-color: #ecc5c7;
 }
 
+/* --- Refresh icon --- */
 .refreshIcon {
     width: 16px;
     height: 16px;
@@ -108,6 +111,7 @@
     }
 }
 
+/* --- Header --- */
 .cardHeader {
     width: 100%;
     display: flex;
@@ -125,6 +129,13 @@
     gap: 16px;
 }
 
+/* --- Search --- */
+.searchContainer {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* --- Table --- */
 .tableCard {
     background-color: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -148,7 +159,7 @@
 
 .tableHeader {
     display: grid;
-    grid-template-columns: 1.6fr minmax(0, 0.7fr) minmax(120px, 1fr) minmax(140px, 1fr) minmax(0, 1fr) minmax(140px, 1fr) minmax(0, 1fr) 200px;
+    grid-template-columns: 1.6fr minmax(0, 0.7fr) minmax(120px, 1fr) minmax(140px, 1fr) minmax(0, 1fr) minmax(140px, 1fr) minmax(0, 1fr) 200px 60px;
     gap: 16px;
     padding: 12px 20px;
     background-color: #f3efe6;
@@ -170,6 +181,7 @@
     text-overflow: ellipsis;
 }
 
+/* --- Rows --- */
 .bidList {
     display: flex;
     flex-direction: column;
@@ -179,7 +191,7 @@
 
 .bidRow {
     display: grid;
-    grid-template-columns: 1.6fr minmax(0, 0.7fr) minmax(120px, 1fr) minmax(140px, 1fr) minmax(0, 1fr) minmax(140px, 1fr) minmax(0, 1fr) 200px;
+    grid-template-columns: 1.6fr minmax(0, 0.7fr) minmax(120px, 1fr) minmax(140px, 1fr) minmax(0, 1fr) minmax(140px, 1fr) minmax(0, 1fr) 200px 60px;
     gap: 16px;
     padding: 12px 20px;
     flex-shrink: 0;
@@ -208,6 +220,7 @@
     border-bottom: none;
 }
 
+/* --- Identity / avatar --- */
 .bidIdentity {
     display: flex;
     align-items: center;
@@ -241,6 +254,7 @@
     text-overflow: ellipsis;
 }
 
+/* --- Text helpers --- */
 .priceText {
     font-size: 13px;
     font-weight: 600;
@@ -271,6 +285,7 @@
     line-height: 1.5;
 }
 
+/* --- Badges --- */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -314,6 +329,7 @@
     color: #7a4a4a;
 }
 
+/* --- Pills for dates --- */
 .cellFechaLimite .metaText,
 .cellModificadoEl .metaText,
 .cellCreadoEl .dateText {
@@ -334,6 +350,7 @@
     line-height: 1.5;
 }
 
+/* --- Form --- */
 .formCard {
     background: #fcfbf9;
     border-radius: 12px;
@@ -422,6 +439,7 @@
     opacity: 1;
 }
 
+/* --- Date picker --- */
 .datePickerWrapper {
     position: relative;
     display: flex;
@@ -443,6 +461,7 @@
     padding-left: 44px;
 }
 
+/* --- Toast --- */
 .toast {
     position: fixed;
     top: 24px;
@@ -479,6 +498,7 @@
     }
 }
 
+/* --- Row animation --- */
 @keyframes slideDownStagger {
     0% {
         opacity: 0;
@@ -497,212 +517,7 @@
     animation-delay: calc(var(--index) * 0.06s);
 }
 
-@media (max-width: 640px) {
-    .baseCard {
-        height: auto;
-        min-height: auto;
-    }
-
-    .secondaryCard {
-        padding: 16px;
-        gap: 12px;
-    }
-
-    .formContainer {
-        padding: 16px;
-    }
-
-    .formActions {
-        flex-direction: column-reverse;
-        width: 100%;
-    }
-
-    .formActions button {
-        width: 100%;
-    }
-
-    .tableCard {
-        overflow: hidden;
-    }
-
-    .tableScrollWrapper {
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .tableHeader {
-        display: none;
-    }
-
-    .bidList {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 14px;
-        background-color: #f3efe6;
-        overflow-y: auto;
-        min-height: 0;
-        flex: 1;
-    }
-
-    .bidRow {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 18px;
-        border: 1px solid #dcd6c7;
-        border-radius: 12px;
-        padding: 14px;
-        background-color: #fcfbf9;
-        min-width: auto;
-        overflow: hidden;
-    }
-
-    .bidRow>* {
-        min-width: 0;
-        width: 100%;
-    }
-
-    .bidList .bidRow:last-child {
-        border-bottom: 1px solid #dcd6c7;
-    }
-
-    .bidRow:hover {
-        background-color: #fcfbf9;
-    }
-
-    .cellCliente,
-    .cellEstado,
-    .cellPresupuesto,
-    .cellFechaLimite,
-    .cellModificadoPor,
-    .cellModificadoEl,
-    .cellCreadoPor,
-    .cellCreadoEl {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-
-    .cellCliente .bidIdentity {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .alignRight {
-        justify-content: flex-start;
-        width: 100%;
-    }
-
-    .bidClientName {
-        font-size: 13px;
-    }
-
-    .priceText {
-        font-size: 12.5px;
-        white-space: normal;
-        overflow: visible;
-    }
-
-    .metaText {
-        font-size: 12px;
-    }
-
-    .dateText {
-        font-size: 12px;
-    }
-
-    .badge {
-        font-size: 0.8rem;
-        padding: 3px 10px;
-    }
-
-    .avatar {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        font-size: 12px;
-    }
-
-    .refreshButtonText {
-        display: none;
-    }
-
-    .refreshIcon {
-        margin-right: 0;
-    }
-
-    .formInput,
-    .clientPickerButton,
-    .dateInput {
-        min-height: 56px;
-        font-size: 14px;
-    }
-
-    .formInput,
-    .clientPickerButton {
-        padding: 14px 12px;
-    }
-
-    .dateInput {
-        padding-left: 40px;
-    }
-
-    .cellCliente::before,
-    .cellEstado::before,
-    .cellPresupuesto::before,
-    .cellFechaLimite::before,
-    .cellModificadoPor::before,
-    .cellModificadoEl::before,
-    .cellCreadoPor::before,
-    .cellCreadoEl::before {
-        display: block;
-        font-size: 10px;
-        font-weight: 700;
-        color: #a8a090;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        line-height: 1.5;
-    }
-
-    .cellCliente::before {
-        content: 'Cliente';
-    }
-
-    .cellEstado::before {
-        content: 'Estado';
-    }
-
-    .cellPresupuesto::before {
-        content: 'Presupuesto';
-    }
-
-    .cellFechaLimite::before {
-        content: 'Fecha límite';
-    }
-
-    .cellModificadoPor::before {
-        content: 'Modificado por';
-    }
-
-    .cellModificadoEl::before {
-        content: 'Modificado el';
-    }
-
-    .cellCreadoPor::before {
-        content: 'Creado por';
-    }
-
-    .cellCreadoEl::before {
-        content: 'Creado el';
-    }
-}
-
+/* --- Client picker --- */
 .clientPickerButton {
     background: #fcfbf9;
     border-radius: 12px;
@@ -757,6 +572,7 @@
     line-height: 1;
 }
 
+/* --- Client pick list --- */
 .searchWrapper {
     padding: 16px 20px;
     border-bottom: 1px solid #ded9cb;
@@ -845,6 +661,7 @@
     line-height: 1.5;
 }
 
+/* --- Empty state --- */
 .emptyState {
     padding: 32px 20px;
     text-align: center;
@@ -857,4 +674,256 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+}
+
+/* --- Delete row button --- */
+.cellAcciones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteRowButton {
+    background: #f5d6d8;
+    color: #7a4a4a;
+    border: 1px solid #e5c5c7;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    flex-shrink: 0;
+}
+
+.deleteRowButton:hover {
+    background-color: #ecc5c7;
+}
+
+.deleteRowButton:active {
+    transform: translateY(1px);
+}
+
+.deleteRowButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- Mobile --- */
+@media (max-width: 640px) {
+    .baseCard {
+        height: auto;
+        min-height: auto;
+    }
+
+    .secondaryCard {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .formContainer {
+        padding: 16px;
+    }
+
+    .formActions {
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .formActions button {
+        width: 100%;
+    }
+
+    .tableCard {
+        overflow: hidden;
+    }
+
+    .tableScrollWrapper {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tableHeader {
+        display: none;
+    }
+
+    .bidList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+        background-color: #f3efe6;
+        overflow-y: auto;
+        min-height: 0;
+        flex: 1;
+    }
+
+    .bidRow {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        border: 1px solid #dcd6c7;
+        border-radius: 12px;
+        padding: 14px;
+        background-color: #fcfbf9;
+        min-width: auto;
+        overflow: hidden;
+    }
+
+    .bidRow>* {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .bidList .bidRow:last-child {
+        border-bottom: 1px solid #dcd6c7;
+    }
+
+    .bidRow:hover {
+        background-color: #fcfbf9;
+    }
+
+    .cellCliente,
+    .cellEstado,
+    .cellPresupuesto,
+    .cellFechaLimite,
+    .cellModificadoPor,
+    .cellModificadoEl,
+    .cellCreadoPor,
+    .cellCreadoEl,
+    .cellAcciones {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .cellCliente .bidIdentity {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .alignRight {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .bidClientName {
+        font-size: 13px;
+    }
+
+    .priceText {
+        font-size: 12.5px;
+        white-space: normal;
+        overflow: visible;
+    }
+
+    .metaText {
+        font-size: 12px;
+    }
+
+    .dateText {
+        font-size: 12px;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
+
+    .avatar {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        font-size: 12px;
+    }
+
+    .refreshButtonText {
+        display: none;
+    }
+
+    .refreshIcon {
+        margin-right: 0;
+    }
+
+    .formInput,
+    .clientPickerButton,
+    .dateInput {
+        min-height: 56px;
+        font-size: 14px;
+    }
+
+    .formInput,
+    .clientPickerButton {
+        padding: 14px 12px;
+    }
+
+    .dateInput {
+        padding-left: 40px;
+    }
+
+    /* Mobile labels */
+    .cellCliente::before,
+    .cellEstado::before,
+    .cellPresupuesto::before,
+    .cellFechaLimite::before,
+    .cellModificadoPor::before,
+    .cellModificadoEl::before,
+    .cellCreadoPor::before,
+    .cellAcciones::before {
+        content: 'Acciones';
+    }
+
+    .cellCreadoEl::before {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        color: #a8a090;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1.5;
+    }
+
+    .cellCliente::before {
+        content: 'Cliente';
+    }
+
+    .cellEstado::before {
+        content: 'Estado';
+    }
+
+    .cellPresupuesto::before {
+        content: 'Presupuesto';
+    }
+
+    .cellFechaLimite::before {
+        content: 'Fecha límite';
+    }
+
+    .cellModificadoPor::before {
+        content: 'Modificado por';
+    }
+
+    .cellModificadoEl::before {
+        content: 'Modificado el';
+    }
+
+    .cellCreadoPor::before {
+        content: 'Creado por';
+    }
+
+    .cellAcciones::before {
+        content: 'Acciones';
+    }
+
+    .cellCreadoEl::before {
+        content: 'Creado el';
+    }
 }

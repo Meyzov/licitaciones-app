@@ -1,3 +1,4 @@
+/* --- Layout --- */
 .secondaryCard {
     background: #fcfbf9;
     border-radius: 12px;
@@ -16,6 +17,7 @@
     overflow-y: auto;
 }
 
+/* --- Text helpers --- */
 .loadingText,
 .errorText {
     color: #8a8375;
@@ -23,6 +25,7 @@
     line-height: 1.5;
 }
 
+/* --- Header --- */
 .cardHeader {
     width: 100%;
     display: flex;
@@ -45,6 +48,7 @@
     align-items: center;
 }
 
+/* --- Shared button styles --- */
 .titleCard,
 .button,
 .docLink,
@@ -81,6 +85,7 @@
     transform: translateY(1px);
 }
 
+/* --- Add button (green) --- */
 .addButton {
     background-color: #e4efe4;
     color: #4a6a4a;
@@ -102,6 +107,18 @@
     cursor: not-allowed;
 }
 
+/* --- Upload label disabled state --- */
+.uploadDisabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* --- Hidden file input --- */
+.fileInput {
+    display: none;
+}
+
+/* --- Doc link --- */
 .docLink {
     background-color: #e5edf4;
     color: #4a5a6a;
@@ -113,6 +130,7 @@
     background-color: #d4e0ed;
 }
 
+/* --- Status --- */
 .statusWrapper {
     display: flex;
     align-items: center;
@@ -125,6 +143,7 @@
     font-weight: 600;
 }
 
+/* --- Badges --- */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -171,6 +190,7 @@
     color: #7a4a4a;
 }
 
+/* --- Actions row --- */
 .actionsRow {
     display: flex;
     gap: 12px;
@@ -182,6 +202,7 @@
     min-width: 160px;
 }
 
+/* --- Danger button --- */
 .dangerButton {
     background-color: #f5d6d8;
     color: #7a4a4a;
@@ -212,6 +233,7 @@
     cursor: not-allowed;
 }
 
+/* --- Section cards --- */
 .sectionCard {
     background: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -238,12 +260,23 @@
     flex-shrink: 0;
 }
 
+.sectionTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4a453d;
+    margin: 0;
+    line-height: 1.5;
+    flex-shrink: 0;
+}
+
+/* --- Summary grid --- */
 .summaryGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
 }
 
+/* --- Client card --- */
 .clientCard {
     background: #f3efe6;
     border: 1px solid #ded9cb;
@@ -301,6 +334,7 @@
     white-space: nowrap;
 }
 
+/* --- Info grid --- */
 .infoGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -339,15 +373,7 @@
     white-space: nowrap;
 }
 
-.sectionTitle {
-    font-size: 14px;
-    font-weight: 700;
-    color: #4a453d;
-    margin: 0;
-    line-height: 1.5;
-    flex-shrink: 0;
-}
-
+/* --- Empty text --- */
 .emptyText {
     color: #a8a090;
     font-size: 13px;
@@ -356,6 +382,7 @@
     flex-shrink: 0;
 }
 
+/* --- History preview --- */
 .historyPreview {
     display: flex;
     flex-direction: column;
@@ -372,6 +399,7 @@
     color: #5c5548;
 }
 
+/* --- Scrollbar --- */
 .secondaryCard::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -386,6 +414,43 @@
     border-radius: 3px;
 }
 
+/* --- Toast --- */
+.toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast_success {
+    background-color: #dbeee0;
+    color: #235d36;
+}
+
+.toast_error {
+    background-color: #f5d6d8;
+    color: #842029;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* --- Responsive --- */
 @media (max-width: 1024px) {
     .infoGrid {
         grid-template-columns: repeat(2, 1fr);
@@ -488,40 +553,5 @@
         width: 100%;
         justify-content: center;
         padding: 10px 14px;
-    }
-}
-
-.toast {
-    position: fixed;
-    top: 24px;
-    left: 50%;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.toast_success {
-    background-color: #dbeee0;
-    color: #235d36;
-}
-
-.toast_error {
-    background-color: #f5d6d8;
-    color: #842029;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -16px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
     }
 }

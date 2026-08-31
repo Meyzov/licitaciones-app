@@ -1,3 +1,4 @@
+/* --- Layout --- */
 .baseCard {
     background-color: #f3efe6;
     border-radius: 12px;
@@ -35,6 +36,7 @@
     overflow: hidden;
 }
 
+/* --- Buttons --- */
 .titleCard,
 .button {
     background-color: #f3efe6;
@@ -67,6 +69,27 @@
     transform: translateY(1px);
 }
 
+.saveButton {
+    background-color: #e4efe4;
+    color: #4a6a4a;
+    border: 1px solid #c8dcc8;
+}
+
+.saveButton:hover {
+    background-color: #d2e4d2;
+}
+
+.cancelButton {
+    background-color: #f5d6d8;
+    color: #7a4a4a;
+    border: 1px solid #e5c5c7;
+}
+
+.cancelButton:hover {
+    background-color: #ecc5c8;
+}
+
+/* --- Icons --- */
 .refreshIcon {
     width: 16px;
     height: 16px;
@@ -97,8 +120,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.2s;
 }
 
+.iconRotated {
+    transform: rotate(180deg);
+}
+
+/* --- Header --- */
 .cardHeader {
     width: 100%;
     display: flex;
@@ -116,6 +145,13 @@
     gap: 16px;
 }
 
+/* --- Search --- */
+.searchContainer {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* --- Table --- */
 .tableCard {
     background-color: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -161,6 +197,7 @@
     text-overflow: ellipsis;
 }
 
+/* --- Rows --- */
 .userList {
     display: flex;
     flex-direction: column;
@@ -195,6 +232,7 @@
     border-bottom: none;
 }
 
+/* --- Identity --- */
 .userIdentity {
     display: flex;
     align-items: center;
@@ -236,6 +274,7 @@
     line-height: 1.5;
 }
 
+/* --- Badges --- */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -259,6 +298,7 @@
     color: #7a4a4a;
 }
 
+/* --- Form --- */
 .formCard {
     background: #fcfbf9;
     border-radius: 12px;
@@ -337,6 +377,7 @@
     box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
 }
 
+/* --- Custom select --- */
 .customSelectWrapper {
     position: relative;
     width: 100%;
@@ -400,27 +441,7 @@
     background-color: #f3efe6;
 }
 
-.cancelButton {
-    background-color: #f5d6d8;
-    color: #7a4a4a;
-    border: 1px solid #e5c5c7;
-}
-
-.cancelButton:hover {
-    background-color: #f5d6d8;
-}
-
-.saveButton {
-    background-color: #e4efe4;
-    color: #4a6a4a;
-    border: 1px solid #c8dcc8;
-}
-
-.saveButton:hover {
-    background-color: #e4efe4;
-    color: #4a6a4a;
-}
-
+/* --- Toast --- */
 .toast {
     position: fixed;
     top: 24px;
@@ -457,6 +478,7 @@
     }
 }
 
+/* --- Row animation --- */
 @keyframes slideDownStagger {
     0% {
         opacity: 0;
@@ -475,38 +497,7 @@
     animation-delay: calc(var(--index) * 0.06s);
 }
 
-.searchWrapper {
-    padding: 16px 20px;
-    border-bottom: 1px solid #ded9cb;
-    background-color: #fcfbf9;
-    flex-shrink: 0;
-}
-
-.searchInput {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 12px;
-    display: flex;
-    border: 1px solid #dcd6c7;
-    font-size: 14px;
-    outline: none;
-    background-color: #f4f0e6;
-    color: #5c5548;
-    box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    line-height: 1.5;
-}
-
-.searchInput::placeholder {
-    color: #a8a090;
-}
-
-.searchInput:focus {
-    border-color: #b3a995;
-    background-color: #f7f3ec;
-    box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
-}
-
+/* --- Empty state --- */
 .emptyState {
     padding: 32px 20px;
     text-align: center;

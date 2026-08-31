@@ -1,3 +1,4 @@
+/* --- Layout --- */
 .secondaryCard {
     background: #fcfbf9;
     border-radius: 12px;
@@ -16,6 +17,7 @@
     overflow-y: auto;
 }
 
+/* --- Text helpers --- */
 .loadingText,
 .errorText {
     color: #8a8375;
@@ -23,6 +25,7 @@
     line-height: 1.5;
 }
 
+/* --- Header --- */
 .cardHeader {
     width: 100%;
     display: flex;
@@ -39,6 +42,7 @@
     gap: 12px;
 }
 
+/* --- Shared button styles --- */
 .titleCard,
 .button {
     background-color: #f3efe6;
@@ -71,6 +75,7 @@
     transform: translateY(1px);
 }
 
+/* --- Section cards --- */
 .sectionCard {
     background: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -90,6 +95,7 @@
     overflow: hidden;
 }
 
+/* --- Empty state --- */
 .emptyText {
     color: #a8a090;
     font-size: 13px;
@@ -97,6 +103,7 @@
     line-height: 1.5;
 }
 
+/* --- History list --- */
 .historyList {
     display: flex;
     flex-direction: column;
@@ -136,6 +143,7 @@
     white-space: nowrap;
 }
 
+/* --- Scrollbar --- */
 .secondaryCard::-webkit-scrollbar,
 .historyList::-webkit-scrollbar {
     width: 6px;
@@ -153,6 +161,7 @@
     border-radius: 3px;
 }
 
+/* --- Responsive --- */
 @media (max-width: 640px) {
     .secondaryCard {
         padding: 16px;

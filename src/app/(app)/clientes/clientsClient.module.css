@@ -1,3 +1,4 @@
+/* --- Layout --- */
 .baseCard {
     background-color: #f3efe6;
     border-radius: 12px;
@@ -28,14 +29,14 @@
     width: 100%;
     height: 100%;
     min-height: 0;
-    flex: 1;
+    display: flex;
     flex-direction: column;
     gap: 16px;
-    display: flex;
     flex: 1 1 300px;
     overflow: hidden;
 }
 
+/* --- Buttons --- */
 .titleCard,
 .button {
     background-color: #f3efe6;
@@ -88,6 +89,7 @@
     background-color: #ecc5c8;
 }
 
+/* --- Icons --- */
 .refreshIconSpinning {
     animation: spin 1s linear infinite;
 }
@@ -96,12 +98,12 @@
     from {
         transform: rotate(0deg);
     }
-
     to {
         transform: rotate(360deg);
     }
 }
 
+/* --- Header --- */
 .cardHeader {
     width: 100%;
     display: flex;
@@ -119,6 +121,13 @@
     gap: 16px;
 }
 
+/* --- Search --- */
+.searchContainer {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* --- Table --- */
 .tableCard {
     background-color: #fcfbf9;
     border: 1px solid #ded9cb;
@@ -158,12 +167,13 @@
     line-height: 1.5;
 }
 
-.tableHeader>* {
+.tableHeader > * {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* --- Rows --- */
 .clientList {
     display: flex;
     flex-direction: column;
@@ -185,7 +195,7 @@
     line-height: 1.5;
 }
 
-.clientRow>* {
+.clientRow > * {
     min-width: 0;
     overflow: hidden;
 }
@@ -198,6 +208,7 @@
     border-bottom: none;
 }
 
+/* --- Identity --- */
 .clientIdentity {
     display: flex;
     align-items: center;
@@ -232,6 +243,7 @@
     text-overflow: ellipsis;
 }
 
+/* --- Text helpers --- */
 .clientEmail {
     font-size: 12.5px;
     color: #8a8375;
@@ -259,6 +271,7 @@
     line-height: 1.5;
 }
 
+/* --- Date pills --- */
 .cellModificadoEl .metaText,
 .cellCreadoEl .dateText {
     display: inline-flex;
@@ -278,6 +291,7 @@
     line-height: 1.5;
 }
 
+/* --- Form --- */
 .formCard {
     background: #fcfbf9;
     border-radius: 12px;
@@ -356,6 +370,7 @@
     box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
 }
 
+/* --- Toast --- */
 .toast {
     position: fixed;
     top: 24px;
@@ -387,19 +402,18 @@
         opacity: 0;
         transform: translate(-50%, -16px);
     }
-
     to {
         opacity: 1;
         transform: translate(-50%, 0);
     }
 }
 
+/* --- Row animation --- */
 @keyframes slideDownStagger {
     0% {
         opacity: 0;
         transform: translateY(-12px);
     }
-
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -412,6 +426,24 @@
     animation-delay: calc(var(--index) * 0.06s);
 }
 
+/* --- Empty states --- */
+.emptyState {
+    padding: 32px 20px;
+    text-align: center;
+    color: #a8a090;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.emptyStateCompact {
+    padding: 24px;
+    text-align: center;
+    color: #8a8375;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* --- Responsive --- */
 @media (max-width: 640px) {
     .baseCard {
         height: auto;
@@ -475,7 +507,7 @@
         overflow: hidden;
     }
 
-    .clientRow>* {
+    .clientRow > * {
         min-width: 0;
         width: 100%;
     }
@@ -580,44 +612,4 @@
     .cellCreadoEl::before {
         content: 'Creado el';
     }
-}
-
-.searchWrapper {
-    padding: 16px 20px;
-    border-bottom: 1px solid #ded9cb;
-    background-color: #fcfbf9;
-    flex-shrink: 0;
-}
-
-.searchInput {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 12px;
-    display: flex;
-    border: 1px solid #dcd6c7;
-    font-size: 14px;
-    outline: none;
-    background-color: #f4f0e6;
-    color: #5c5548;
-    box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    line-height: 1.5;
-}
-
-.searchInput::placeholder {
-    color: #a8a090;
-}
-
-.searchInput:focus {
-    border-color: #b3a995;
-    background-color: #f7f3ec;
-    box-shadow: 0 0 0 2px rgba(179, 169, 149, 0.2);
-}
-
-.emptyState {
-    padding: 32px 20px;
-    text-align: center;
-    color: #a8a090;
-    font-size: 13px;
-    line-height: 1.5;
 }
