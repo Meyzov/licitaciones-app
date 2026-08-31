@@ -343,6 +343,28 @@ export default function BidDetailClient({ bidId }: { bidId: string }) {
                 </div>
             )}
 
+            {bid.estado === "por_cobrar" && (
+                <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
+                    <div className={styles.sectionHeaderRow}>
+                        <button className={styles.button} onClick={() => router.push(`/licitaciones/${bidId}/pagos`)}>
+                            Ver pagos
+                            <FiArrowRight size={14} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {bid.estado === "cobrada" && (
+                <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
+                    <div className={styles.sectionHeaderRow}>
+                        <button className={styles.button} onClick={() => router.push(`/licitaciones/${bidId}/pagos`)}>
+                            Ver historial de pagos
+                            <FiArrowRight size={14} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className={`${styles.sectionCard} ${styles.sectionCardInfo}`}>
                 <div className={styles.clientCard}>
                     <span className={styles.clientAvatar}>

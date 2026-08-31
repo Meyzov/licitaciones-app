@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
+import { roundMoney } from "@/lib/money";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -95,10 +96,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             );
         }
 
-        const currentTotal = bid.productos.reduce((sum, item) => sum + Number(item.cantidad) * Number(item.precioAcordado), 0);
+        const currentTotal = roundMoney(
+            bid.productos.reduce(
+                (sum, item) => sum + Number(item.cantidad) * Number(item.precioAcordado),
+                0
+            )
+        );
 
-        const newSubtotal = parsedCantidad * parsedPrecio;
-        const newTotal = currentTotal + newSubtotal;
+        const newSubtotal = roundMoney(parsedCantidad * parsedPrecio);
+        const newTotal = roundMoney(currentTotal + newSubtotal);
         const maxBudget = Number(bid.presupuestoMaximo);
 
         if (newTotal > maxBudget) {
