@@ -15,60 +15,66 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         const { id: bidId } = await params;
 
-        const bid = await prisma.licitacion.findUnique({
-            where: {
-                id: bidId
-            },
+        const result = await prisma.$transaction(async (tx) => {
+            const bid = await tx.licitacion.findUnique({
+                where: { id: bidId },
+                select: { id: true, estado: true },
+            });
 
-            select: {
-                id: true,
-                estado: true
-            },
-        });
+            if (!bid) {
+                return {
+                    ok: false,
+                    status: 404,
+                    message: "Licitación no encontrada.",
+                };
+            }
 
-        if (!bid) {
-            return NextResponse.json(
-                { error: "Licitación no encontrada." },
-                { status: 404 },
-            );
-        }
+            if (bid.estado !== "finalizada") {
+                return {
+                    ok: false,
+                    status: 403,
+                    message: "Solo se pueden facturar licitaciones en estado finalizada.",
+                };
+            }
 
-        if (bid.estado !== "finalizada") {
-            return NextResponse.json(
-                { error: "Solo se pueden facturar licitaciones en estado finalizada." },
-                { status: 403 },
-            );
-        }
-
-        await prisma.$transaction([
-            prisma.licitacion.update({
-                where: {
-                    id: bidId
-                },
-
+            await tx.licitacion.update({
+                where: { id: bidId },
                 data: {
                     estado: "por_cobrar",
                     updatedAt: new Date(),
                     updatedBy: currentUser.id,
                 },
-            }),
-            prisma.historialTransicion.create({
+            });
+
+            await tx.historialTransicion.create({
                 data: {
                     licitacionId: bidId,
                     usuarioId: currentUser.id,
                     estadoAnterior: "finalizada",
                     estadoNuevo: "por_cobrar",
                 },
-            }),
-        ]);
+            });
+
+            return {
+                ok: true,
+                status: 200,
+                message: "Licitación facturada, ahora está en estado por cobrar.",
+            };
+        });
+
+        if (!result.ok) {
+            return NextResponse.json(
+                { error: result.message },
+                { status: result.status },
+            );
+        }
 
         return NextResponse.json(
-            { message: "Licitación facturada, ahora está en estado por cobrar." },
-            { status: 200 },
+            { message: result.message },
+            { status: result.status },
         );
 
     } catch (error) {
-
         console.error("Error al facturar la licitación:", error);
         return NextResponse.json(
             { error: "Error interno del servidor." },

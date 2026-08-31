@@ -21,38 +21,23 @@ export async function GET() {
                 estado: true,
                 createdAt: true,
                 updatedAt: true,
-
                 cliente: {
-                    select: {
-                        id: true,
-                        nombre: true,
-                    },
+                    select: { id: true, nombre: true },
                 },
-
                 creador: {
-                    select: {
-                        nombre: true,
-                    },
+                    select: { nombre: true },
                 },
-
                 modificador: {
-                    select: {
-                        nombre: true,
-                    },
+                    select: { nombre: true },
                 },
             },
-
-            orderBy: {
-                createdAt: "desc",
-            },
+            orderBy: { createdAt: "desc" },
         });
 
         return NextResponse.json(bids, { status: 200 });
 
     } catch (error) {
-
         console.error("Error al obtener las licitaciones:", error);
-
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },
@@ -74,15 +59,14 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { clientId, maxBudget, deadline } = body;
 
-        if (typeof clientId !== "string" || (typeof maxBudget !== "number" && typeof maxBudget !== "string") || typeof deadline !== "string") {
+        if (typeof clientId !== "string") {
             return NextResponse.json(
-                { error: "Los datos enviados no son válidos." },
+                { error: "El cliente es obligatorio." },
                 { status: 400 },
             );
         }
 
         const normalizedClientId = clientId.trim();
-
         if (!normalizedClientId) {
             return NextResponse.json(
                 { error: "El cliente es obligatorio." },
@@ -90,17 +74,36 @@ export async function POST(request: Request) {
             );
         }
 
-        const parsedBudget = Number(maxBudget);
+        const rawBudget = Number(maxBudget);
+        if (
+            maxBudget === undefined ||
+            maxBudget === null ||
+            maxBudget === "" ||
+            (typeof maxBudget !== "number" && typeof maxBudget !== "string") ||
+            !Number.isFinite(rawBudget)
+        ) {
+            return NextResponse.json(
+                { error: "El presupuesto máximo es obligatorio y debe ser un número válido." },
+                { status: 400 },
+            );
+        }
 
-        if (!Number.isFinite(parsedBudget) || parsedBudget <= 0) {
+        const parsedBudget = rawBudget;
+        if (parsedBudget <= 0) {
             return NextResponse.json(
                 { error: "El presupuesto máximo debe ser un número mayor a 0." },
                 { status: 400 },
             );
         }
 
-        const parsedDeadline = new Date(deadline);
+        if (typeof deadline !== "string" || !deadline.trim()) {
+            return NextResponse.json(
+                { error: "La fecha límite es obligatoria." },
+                { status: 400 },
+            );
+        }
 
+        const parsedDeadline = new Date(deadline);
         if (Number.isNaN(parsedDeadline.getTime())) {
             return NextResponse.json(
                 { error: "La fecha límite no es válida." },
@@ -108,7 +111,8 @@ export async function POST(request: Request) {
             );
         }
 
-        if (parsedDeadline <= new Date()) {
+        const now = new Date();
+        if (parsedDeadline <= now) {
             return NextResponse.json(
                 { error: "La fecha límite debe ser una fecha futura." },
                 { status: 400 },
@@ -116,13 +120,8 @@ export async function POST(request: Request) {
         }
 
         const client = await prisma.cliente.findUnique({
-            where: {
-                id: normalizedClientId,
-            },
-
-            select: {
-                id: true,
-            },
+            where: { id: normalizedClientId },
+            select: { id: true },
         });
 
         if (!client) {
@@ -139,7 +138,6 @@ export async function POST(request: Request) {
                 fechaLimite: parsedDeadline,
                 estado: "borrador",
                 createdBy: currentUser.id,
-                updatedAt: null,
             },
         });
 
@@ -155,9 +153,7 @@ export async function POST(request: Request) {
         );
 
     } catch (error) {
-
         console.error("Error al crear la licitación:", error);
-
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },

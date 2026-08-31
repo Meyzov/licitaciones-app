@@ -21,9 +21,7 @@ const BUCKET_NAME = "propuestas";
 function extractStoragePath(publicUrl: string): string | null {
     const marker = `/storage/v1/object/public/${BUCKET_NAME}/`;
     const index = publicUrl.indexOf(marker);
-
     if (index === -1) return null;
-
     return publicUrl.substring(index + marker.length);
 }
 
@@ -41,10 +39,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         const { id: bidId } = await params;
 
         const bid = await prisma.licitacion.findUnique({
-            where: {
-                id: bidId
-            },
-
+            where: { id: bidId },
             select: {
                 id: true,
                 estado: true,
@@ -92,21 +87,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         if (bid.documentoPropuestaUrl) {
             const oldPath = extractStoragePath(bid.documentoPropuestaUrl);
-
             if (oldPath) {
                 const { error: removeError } = await supabaseAdmin.storage
                     .from(BUCKET_NAME)
                     .remove([oldPath]);
-
-                if (removeError) {
-                    throw removeError;
-                }
+                if (removeError) throw removeError;
             }
         }
 
         const fileExt = file.name.split(".").pop();
         const filePath = `${bidId}/${Date.now()}.${fileExt}`;
-
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
@@ -129,10 +119,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             .getPublicUrl(filePath);
 
         await prisma.licitacion.update({
-            where: {
-                id: bidId
-            },
-
+            where: { id: bidId },
             data: {
                 documentoPropuestaUrl: publicUrlData.publicUrl,
                 updatedAt: new Date(),
@@ -147,9 +134,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             },
             { status: 200 },
         );
+
     } catch (error) {
         console.error("Error al subir el documento:", error);
-
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },

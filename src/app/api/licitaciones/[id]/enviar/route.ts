@@ -37,16 +37,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         const { id: bidId } = await params;
 
         const bid = await prisma.licitacion.findUnique({
-            where: {
-                id: bidId
-            },
-
+            where: { id: bidId },
             include: {
                 cliente: true,
                 productos: {
-                    include: {
-                        producto: true,
-                    },
+                    include: { producto: true },
                 },
             },
         });
@@ -73,7 +68,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
         const docResponse = await fetch(bid.documentoPropuestaUrl);
-
         if (!docResponse.ok) {
             return NextResponse.json(
                 { error: "No se pudo obtener el documento para adjuntarlo al correo." },
@@ -88,7 +82,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             from: "Licitaciones <onboarding@resend.dev>",
             to: bid.cliente.email,
             subject: `Nueva licitación comercial - ${bid.cliente.nombre}`,
-
             react: EmailTemplate({
                 clienteNombre: bid.cliente.nombre,
                 presupuestoMaximo: Number(bid.presupuestoMaximo),
@@ -97,7 +90,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                 formatPrice,
                 formatDate,
             }),
-
             attachments: [
                 {
                     filename: docFileName,
@@ -113,37 +105,39 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             );
         }
 
-        await prisma.$transaction([
-            prisma.licitacion.update({
-                where: {
-                    id: bidId
-                },
-
+        const result = await prisma.$transaction(async (tx) => {
+            await tx.licitacion.update({
+                where: { id: bidId },
                 data: {
                     estado: "activa",
                     updatedAt: new Date(),
                     updatedBy: currentUser.id,
                 },
-            }),
-            prisma.historialTransicion.create({
+            });
+
+            await tx.historialTransicion.create({
                 data: {
                     licitacionId: bidId,
                     usuarioId: currentUser.id,
                     estadoAnterior: "borrador",
                     estadoNuevo: "activa",
                 },
-            }),
-        ]);
+            });
+
+            return {
+                ok: true,
+                status: 200,
+                message: "Licitación enviada exitosamente.",
+            };
+        });
 
         return NextResponse.json(
-            { message: "Licitación enviada exitosamente." },
-            { status: 200 },
+            { message: result.message },
+            { status: result.status },
         );
 
     } catch (error) {
-
         console.error("Error al enviar la licitación:", error);
-
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },

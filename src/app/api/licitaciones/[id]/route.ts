@@ -13,9 +13,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             );
         }
 
-        const { id } = await params;
+        const { id: bidId } = await params;
+
         const bid = await prisma.licitacion.findUnique({
-            where: { id },
+            where: { id: bidId },
             select: {
                 id: true,
                 presupuestoMaximo: true,
@@ -43,11 +44,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                     },
                 },
                 pagos: {
-                    select: {
-                        id: true,
-                        monto: true,
-                        fecha: true,
-                    },
+                    select: { id: true, monto: true, fecha: true },
                     orderBy: { fecha: "desc" },
                 },
                 historial: {

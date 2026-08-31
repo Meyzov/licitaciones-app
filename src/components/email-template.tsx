@@ -1,20 +1,24 @@
-import { Decimal } from "../../generated/prisma/internal/prismaNamespace";
+import { Decimal } from "@prisma/client/runtime/index-browser";
 
-interface ProductoItem {
+interface ProductItem {
     cantidad: number;
     precioAcordado: Decimal | number | string;
-    producto: {
-        nombre: string;
-    };
+    producto: { nombre: string };
 }
 
 interface EmailTemplateProps {
     clienteNombre: string;
-    presupuestoMaximo: number | string;
+    presupuestoMaximo: Decimal | number | string;
     fechaLimite: Date | string;
-    productos: ProductoItem[];
+    productos: ProductItem[];
     formatPrice: (price: number) => string;
     formatDate: (date: Date) => string;
+}
+
+function toNumber(value: Decimal | number | string): number {
+    if (typeof value === "number") return value;
+    if (typeof value === "string") return Number(value);
+    return value.toNumber();
 }
 
 export function EmailTemplate({
@@ -25,6 +29,8 @@ export function EmailTemplate({
     formatPrice,
     formatDate,
 }: EmailTemplateProps) {
+    const safeDate = fechaLimite instanceof Date ? fechaLimite : new Date(fechaLimite);
+
     return (
         <div style={{
             fontFamily: "'Georgia', 'Times New Roman', 'Segoe UI', serif",
@@ -50,7 +56,7 @@ export function EmailTemplate({
                     <h1 style={{
                         margin: 0,
                         fontSize: "22px",
-                        fontWeight: "700",
+                        fontWeight: 700,
                         color: "#4a5b66",
                         letterSpacing: "0.3px",
                     }}>
@@ -60,7 +66,7 @@ export function EmailTemplate({
                         margin: "4px 0 0 0",
                         fontSize: "14px",
                         color: "#6b7e8c",
-                        fontWeight: "400",
+                        fontWeight: 400,
                         fontFamily: "'Segoe UI', sans-serif",
                     }}>
                         Sistema de Gestión de Licitaciones
@@ -70,15 +76,15 @@ export function EmailTemplate({
                 <div style={{ padding: "18px 0 4px" }}>
                     <p style={{
                         fontSize: "16px",
-                        lineHeight: "1.6",
+                        lineHeight: 1.6,
                         margin: "0 0 4px 0",
                         color: "#4a4f55",
                     }}>
-                        Estimado(a) <strong style={{ color: "#3d5a73", fontWeight: "700" }}>{clienteNombre}</strong>,
+                        Estimado(a) <strong style={{ color: "#3d5a73", fontWeight: 700 }}>{clienteNombre}</strong>,
                     </p>
                     <p style={{
                         fontSize: "15px",
-                        lineHeight: "1.6",
+                        lineHeight: 1.6,
                         margin: "0 0 22px 0",
                         color: "#5a626a",
                         fontFamily: "'Segoe UI', sans-serif",
@@ -102,7 +108,7 @@ export function EmailTemplate({
                         }}>
                             <div style={{
                                 fontSize: "11px",
-                                fontWeight: "600",
+                                fontWeight: 600,
                                 color: "#8a7a4a",
                                 letterSpacing: "0.6px",
                                 textTransform: "uppercase",
@@ -112,11 +118,11 @@ export function EmailTemplate({
                             </div>
                             <div style={{
                                 fontSize: "20px",
-                                fontWeight: "700",
+                                fontWeight: 700,
                                 color: "#6b5a3a",
                                 marginTop: "2px",
                             }}>
-                                {formatPrice(Number(presupuestoMaximo))}
+                                {formatPrice(toNumber(presupuestoMaximo))}
                             </div>
                         </div>
 
@@ -129,7 +135,7 @@ export function EmailTemplate({
                         }}>
                             <div style={{
                                 fontSize: "11px",
-                                fontWeight: "600",
+                                fontWeight: 600,
                                 color: "#3d6b63",
                                 letterSpacing: "0.6px",
                                 textTransform: "uppercase",
@@ -139,11 +145,11 @@ export function EmailTemplate({
                             </div>
                             <div style={{
                                 fontSize: "18px",
-                                fontWeight: "600",
+                                fontWeight: 600,
                                 color: "#2e554a",
                                 marginTop: "2px",
                             }}>
-                                {formatDate(new Date(fechaLimite))}
+                                {formatDate(safeDate)}
                             </div>
                         </div>
                     </div>
@@ -152,7 +158,7 @@ export function EmailTemplate({
                         <>
                             <h3 style={{
                                 fontSize: "16px",
-                                fontWeight: "600",
+                                fontWeight: 600,
                                 color: "#4a5b66",
                                 margin: "0 0 12px 0",
                                 paddingBottom: "6px",
@@ -175,71 +181,21 @@ export function EmailTemplate({
                                             backgroundColor: "#f4f0f8",
                                             borderBottom: "2px solid #e2dae8",
                                         }}>
-                                            <th style={{
-                                                padding: "10px 12px",
-                                                textAlign: "left",
-                                                fontWeight: "600",
-                                                color: "#4d4359",
-                                                fontFamily: "'Segoe UI', sans-serif",
-                                                fontSize: "12px",
-                                                letterSpacing: "0.3px",
-                                            }}>
-                                                Producto
-                                            </th>
-                                            <th style={{
-                                                padding: "10px 12px",
-                                                textAlign: "center",
-                                                fontWeight: "600",
-                                                color: "#4d4359",
-                                                fontFamily: "'Segoe UI', sans-serif",
-                                                fontSize: "12px",
-                                                letterSpacing: "0.3px",
-                                            }}>
-                                                Cant.
-                                            </th>
-                                            <th style={{
-                                                padding: "10px 12px",
-                                                textAlign: "right",
-                                                fontWeight: "600",
-                                                color: "#4d4359",
-                                                fontFamily: "'Segoe UI', sans-serif",
-                                                fontSize: "12px",
-                                                letterSpacing: "0.3px",
-                                            }}>
-                                                Precio
-                                            </th>
+                                            <th style={thStyle}>Producto</th>
+                                            <th style={{ ...thStyle, textAlign: "center" }}>Cant.</th>
+                                            <th style={{ ...thStyle, textAlign: "right" }}>Precio</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {productos.map((item, index) => (
-                                            <tr key={index} style={{
-                                                borderBottom: index === productos.length - 1 ? "none" : "1px solid #eeeae5",
-                                                backgroundColor: index % 2 === 0 ? "#fcfcfb" : "#faf8f6",
+                                        {productos.map((item, idx) => (
+                                            <tr key={idx} style={{
+                                                borderBottom: idx === productos.length - 1 ? "none" : "1px solid #eeeae5",
+                                                backgroundColor: idx % 2 === 0 ? "#fcfcfb" : "#faf8f6",
                                             }}>
-                                                <td style={{
-                                                    padding: "10px 12px",
-                                                    color: "#3d4349",
-                                                    fontWeight: "500",
-                                                    fontSize: "13px",
-                                                }}>
-                                                    {item.producto.nombre}
-                                                </td>
-                                                <td style={{
-                                                    padding: "10px 12px",
-                                                    textAlign: "center",
-                                                    color: "#4a4f55",
-                                                    fontSize: "13px",
-                                                }}>
-                                                    {item.cantidad}
-                                                </td>
-                                                <td style={{
-                                                    padding: "10px 12px",
-                                                    textAlign: "right",
-                                                    fontWeight: "600",
-                                                    color: "#4a6b5a",
-                                                    fontSize: "13px",
-                                                }}>
-                                                    {formatPrice(Number(item.precioAcordado))}
+                                                <td style={tdStyle}>{item.producto.nombre}</td>
+                                                <td style={{ ...tdStyle, textAlign: "center" }}>{item.cantidad}</td>
+                                                <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600, color: "#4a6b5a" }}>
+                                                    {formatPrice(toNumber(item.precioAcordado))}
                                                 </td>
                                             </tr>
                                         ))}
@@ -273,27 +229,13 @@ export function EmailTemplate({
                     </div>
 
                     <div style={{ borderTop: "1px solid #efeae4", paddingTop: "20px", marginTop: "4px" }}>
-                        <p style={{
-                            fontSize: "15px",
-                            lineHeight: "1.6",
-                            margin: "0 0 4px 0",
-                            color: "#5a626a",
-                            fontFamily: "'Segoe UI', sans-serif",
-                        }}>
+                        <p style={paragraphStyle}>
                             Quedamos atentos a sus comentarios y a su disposición para cualquier consulta.
                         </p>
-                        <p style={{
-                            fontSize: "15px",
-                            lineHeight: "1.6",
-                            margin: "0",
-                            color: "#5a626a",
-                            fontFamily: "'Segoe UI', sans-serif",
-                        }}>
-                            Atentamente,
-                        </p>
+                        <p style={paragraphStyle}>Atentamente,</p>
                         <p style={{
                             fontSize: "16px",
-                            fontWeight: "600",
+                            fontWeight: 600,
                             margin: "8px 0 0 0",
                             color: "#4a5b66",
                             fontFamily: "'Georgia', serif",
@@ -311,7 +253,7 @@ export function EmailTemplate({
                     textAlign: "center",
                     color: "#9b9187",
                     fontSize: "11px",
-                    lineHeight: "1.5",
+                    lineHeight: 1.5,
                     fontFamily: "'Segoe UI', sans-serif",
                 }}>
                     <p style={{ margin: 0 }}>
@@ -325,3 +267,28 @@ export function EmailTemplate({
         </div>
     );
 }
+
+const thStyle: React.CSSProperties = {
+    padding: "10px 12px",
+    textAlign: "left",
+    fontWeight: 600,
+    color: "#4d4359",
+    fontFamily: "'Segoe UI', sans-serif",
+    fontSize: "12px",
+    letterSpacing: "0.3px",
+};
+
+const tdStyle: React.CSSProperties = {
+    padding: "10px 12px",
+    color: "#3d4349",
+    fontWeight: 500,
+    fontSize: "13px",
+};
+
+const paragraphStyle: React.CSSProperties = {
+    fontSize: "15px",
+    lineHeight: 1.6,
+    margin: "0 0 4px 0",
+    color: "#5a626a",
+    fontFamily: "'Segoe UI', sans-serif",
+};

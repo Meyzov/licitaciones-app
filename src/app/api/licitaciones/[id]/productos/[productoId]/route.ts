@@ -14,88 +14,95 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         }
 
         const resolvedParams = await params;
-        const licitacionId = resolvedParams?.id?.trim();
-        const productoId = resolvedParams?.productoId?.trim();
+        const bidId = resolvedParams?.id?.trim();
+        const productId = resolvedParams?.productoId?.trim();
 
-        if (!licitacionId || !productoId) {
+        if (!bidId || !productId) {
             return NextResponse.json(
-                {
-                    error: "Faltan parámetros requeridos.",
-                },
+                { error: "Faltan parámetros requeridos." },
                 { status: 400 },
             );
         }
 
-        const bid = await prisma.licitacion.findUnique({
-            where: {
-                id: licitacionId
-            },
+        const result = await prisma.$transaction(async (tx) => {
+            const bid = await tx.licitacion.findUnique({
+                where: { id: bidId },
+                select: { id: true, estado: true },
+            });
 
-            select: {
-                id: true,
-                estado: true,
-            },
-        });
+            if (!bid) {
+                return {
+                    ok: false,
+                    status: 404,
+                    message: "Licitación no encontrada.",
+                };
+            }
 
-        if (!bid) {
-            return NextResponse.json(
-                { error: "Licitación no encontrada." },
-                { status: 404 },
-            );
-        }
+            if (bid.estado !== "borrador" && bid.estado !== "activa") {
+                return {
+                    ok: false,
+                    status: 403,
+                    message: "Acción no permitida para el estado actual.",
+                };
+            }
 
-        if (bid.estado !== "borrador" && bid.estado !== "activa") {
-            return NextResponse.json(
-                { error: "Acción no permitida para el estado actual." },
-                { status: 403 },
-            );
-        }
-
-        const existingProduct =
-            await prisma.licitacionProducto.findUnique({
+            const existingItem = await tx.licitacionProducto.findUnique({
                 where: {
                     licitacionId_productoId: {
-                        licitacionId,
-                        productoId,
+                        licitacionId: bidId,
+                        productoId: productId,
                     },
                 },
             });
 
-        if (!existingProduct) {
+            if (!existingItem) {
+                return {
+                    ok: false,
+                    status: 404,
+                    message: "El producto no está asociado a esta licitación.",
+                };
+            }
+
+            await tx.licitacionProducto.delete({
+                where: {
+                    licitacionId_productoId: {
+                        licitacionId: bidId,
+                        productoId: productId,
+                    },
+                },
+            });
+
+            await tx.licitacion.update({
+                where: { id: bidId },
+                data: {
+                    updatedAt: new Date(),
+                    updatedBy: currentUser.id,
+                },
+            });
+
+            return {
+                ok: true,
+                status: 200,
+                message: "Producto eliminado de la licitación.",
+            };
+        });
+
+        if (!result.ok) {
             return NextResponse.json(
-                { error: "El producto no está asociado a esta licitación." },
-                { status: 404 },
+                { error: result.message },
+                { status: result.status },
             );
         }
 
-        await prisma.licitacionProducto.delete({
-            where: {
-                licitacionId_productoId: {
-                    licitacionId,
-                    productoId,
-                },
-            },
-        });
-
-        await prisma.licitacion.update({
-            where: {
-                id: licitacionId
-            },
-
-            data: {
-                updatedAt: new Date(),
-                updatedBy: currentUser.id,
-            },
-        });
-
         return NextResponse.json(
-            { message: "Operación exitosa." },
-            { status: 200 },
+            { message: result.message },
+            { status: result.status },
         );
 
-    } catch {
+    } catch (error) {
+        console.error("Error al eliminar el producto de la licitación:", error);
         return NextResponse.json(
-            { error: "Error interno del servidor."},
+            { error: "Error interno del servidor." },
             { status: 500 },
         );
     }

@@ -20,31 +20,20 @@ export async function GET() {
                 precioBase: true,
                 createdAt: true,
                 updatedAt: true,
-
                 creador: {
-                    select: {
-                        nombre: true,
-                    },
+                    select: { nombre: true },
                 },
-
                 modificador: {
-                    select: {
-                        nombre: true,
-                    },
+                    select: { nombre: true },
                 },
             },
-
-            orderBy: {
-                nombre: "asc",
-            },
+            orderBy: { nombre: "asc" },
         });
 
         return NextResponse.json(products, { status: 200 });
 
     } catch (error) {
-
         console.error("Error al obtener los productos:", error);
-
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },
@@ -66,15 +55,14 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, basePrice } = body;
 
-        if (typeof name !== "string" || basePrice === undefined || basePrice === null) {
+        if (typeof name !== "string") {
             return NextResponse.json(
-                { error: "Faltan campos obligatorios (nombre, precio base)." },
+                { error: "El nombre del producto es obligatorio." },
                 { status: 400 },
             );
         }
 
         const normalizedName = name.trim();
-
         if (!normalizedName) {
             return NextResponse.json(
                 { error: "El nombre del producto es obligatorio." },
@@ -82,9 +70,22 @@ export async function POST(request: Request) {
             );
         }
 
-        const parsedPrice = Number(basePrice);
+        const rawPrice = Number(basePrice);
+        if (
+            basePrice === undefined ||
+            basePrice === null ||
+            basePrice === "" ||
+            (typeof basePrice !== "number" && typeof basePrice !== "string") ||
+            !Number.isFinite(rawPrice)
+        ) {
+            return NextResponse.json(
+                { error: "El precio base es obligatorio y debe ser un número válido." },
+                { status: 400 },
+            );
+        }
 
-        if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+        const parsedPrice = rawPrice;
+        if (parsedPrice <= 0) {
             return NextResponse.json(
                 { error: "El precio base debe ser un número mayor a 0." },
                 { status: 400 },
@@ -96,7 +97,6 @@ export async function POST(request: Request) {
                 nombre: normalizedName,
                 precioBase: parsedPrice,
                 createdBy: currentUser.id,
-                updatedAt: null,
             },
         });
 
@@ -113,9 +113,7 @@ export async function POST(request: Request) {
         );
 
     } catch (error) {
-
         console.error("Error al crear el producto:", error);
-
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },

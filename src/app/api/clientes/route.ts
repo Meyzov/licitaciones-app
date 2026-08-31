@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function GET() {
     try {
         const currentUser = await getAuthenticatedUser();
@@ -20,29 +22,19 @@ export async function GET() {
                 email: true,
                 createdAt: true,
                 updatedAt: true,
-
                 creador: {
-                    select: {
-                        nombre: true,
-                    },
+                    select: { nombre: true },
                 },
-
                 modificador: {
-                    select: {
-                        nombre: true,
-                    },
+                    select: { nombre: true },
                 },
             },
-
-            orderBy: {
-                nombre: "asc",
-            },
+            orderBy: { nombre: "asc" },
         });
 
         return NextResponse.json(clients, { status: 200 });
 
     } catch (error) {
-
         console.error("Error al obtener los clientes:", error);
         return NextResponse.json(
             { error: "Error interno del servidor." },
@@ -65,19 +57,32 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, email } = body;
 
-        if (typeof name !== "string" || typeof email !== "string") {
+        if (typeof name !== "string") {
             return NextResponse.json(
-                { error: "Nombre y email son obligatorios." },
+                { error: "El nombre es obligatorio." },
                 { status: 400 },
             );
         }
 
         const normalizedName = name.trim();
-        const normalizedEmail = email.trim().toLowerCase();
-
-        if (!normalizedName || !normalizedEmail) {
+        if (!normalizedName) {
             return NextResponse.json(
-                { error: "Nombre y email son obligatorios." },
+                { error: "El nombre es obligatorio." },
+                { status: 400 },
+            );
+        }
+
+        if (typeof email !== "string") {
+            return NextResponse.json(
+                { error: "El email es obligatorio." },
+                { status: 400 },
+            );
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+        if (!normalizedEmail || !EMAIL_REGEX.test(normalizedEmail)) {
+            return NextResponse.json(
+                { error: "El email no es válido." },
                 { status: 400 },
             );
         }
@@ -87,7 +92,6 @@ export async function POST(request: Request) {
                 nombre: normalizedName,
                 email: normalizedEmail,
                 createdBy: currentUser.id,
-                updatedAt: null,
             },
         });
 
@@ -102,8 +106,8 @@ export async function POST(request: Request) {
             },
             { status: 201 },
         );
-    } catch (error) {
 
+    } catch (error) {
         console.error("Error al crear el cliente:", error);
         return NextResponse.json(
             { error: "Error interno del servidor." },
