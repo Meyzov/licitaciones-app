@@ -4,25 +4,22 @@ import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-
 import {
     FiArrowLeft,
-    FiUser,
+    FiBox,
     FiUserPlus,
     FiCalendar,
     FiEdit3,
     FiClock,
 } from "react-icons/fi";
-
 import { useToast } from "@/lib/useToast";
-
-import styles from "./clientDetailClient.module.css";
+import styles from "./productDetailClient.module.css";
 
 // --- Types ---
-type Client = {
+type Product = {
     id: string;
     nombre: string;
-    email: string;
+    precioBase: number;
     createdAt: string;
     updatedAt: string | null;
     creador: {
@@ -33,33 +30,33 @@ type Client = {
     } | null;
 };
 
-type ClientDetailClientProps = {
-    clientId: string;
+type ProductDetailClientProps = {
+    productId: string;
 };
 
-type UpdateClientData = {
+type UpdateProductData = {
     name: string;
-    email: string;
+    basePrice: number;
 };
 
 // --- Fetchers ---
-const fetcher = async (url: string): Promise<Client> => {
+const fetcher = async (url: string): Promise<Product> => {
     const response = await fetch(url);
 
     const data = await response.json();
 
     if (!response.ok) {
         throw new Error(
-            data.error || "Error al obtener el cliente.",
+            data.error || "Error al obtener el producto.",
         );
     }
 
     return data;
 };
 
-const updateClientFetcher = async (
+const updateProductFetcher = async (
     url: string,
-    { arg }: { arg: UpdateClientData },
+    { arg }: { arg: UpdateProductData },
 ) => {
     const response = await fetch(url, {
         method: "PUT",
@@ -73,7 +70,7 @@ const updateClientFetcher = async (
 
     if (!response.ok) {
         throw new Error(
-            data.error || "Error al actualizar el cliente.",
+            data.error || "Error al actualizar el producto.",
         );
     }
 
@@ -108,24 +105,24 @@ const formatDate = (isoDate: string | null) => {
 };
 
 // --- Edit Form ---
-function ClientEditForm({ client, onCancel, onSuccess }: {
-    client: Client;
+function ProductEditForm({ product, onCancel, onSuccess }: {
+    product: Product;
     onCancel: () => void;
     onSuccess: () => void;
 }) {
     const { toast, showToast } = useToast();
 
     const [formData, setFormData] = useState({
-        name: client.nombre,
-        email: client.email,
+        name: product.nombre,
+        basePrice: String(product.precioBase),
     });
 
     const {
-        trigger: updateClient,
+        trigger: updateProduct,
         isMutating,
     } = useSWRMutation(
-        `/api/clientes/${client.id}`,
-        updateClientFetcher,
+        `/api/productos/${product.id}`,
+        updateProductFetcher,
     );
 
     const handleInputChange = (
@@ -142,11 +139,25 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
     ) => {
         e.preventDefault();
 
+        const parsedPrice = Number(formData.basePrice);
+
+        if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+            showToast(
+                "El precio base debe ser un número mayor a 0.",
+                "error",
+            );
+
+            return;
+        }
+
         try {
-            await updateClient(formData);
+            await updateProduct({
+                name: formData.name,
+                basePrice: parsedPrice,
+            });
 
             showToast(
-                "Cliente actualizado exitosamente",
+                "Producto actualizado exitosamente",
                 "success",
             );
 
@@ -167,24 +178,24 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
         {
             icon: <FiUserPlus />,
             label: "Creado por",
-            value: client.creador.nombre,
+            value: product.creador.nombre,
         },
         {
             icon: <FiCalendar />,
             label: "Creado el",
-            value: formatDate(client.createdAt),
+            value: formatDate(product.createdAt),
         },
         {
             icon: <FiEdit3 />,
             label: "Modificado por",
-            value: client.modificador
-                ? client.modificador.nombre
+            value: product.modificador
+                ? product.modificador.nombre
                 : "No modificado",
         },
         {
             icon: <FiClock />,
             label: "Modificado el",
-            value: formatDate(client.updatedAt),
+            value: formatDate(product.updatedAt),
         },
     ];
 
@@ -204,22 +215,22 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
                 <div className={styles.formCard}>
                     <div className={styles.formHeader}>
                         <div className={styles.formHeaderIcon}>
-                            <FiUser />
+                            <FiBox />
                         </div>
 
                         <div>
                             <div className={styles.formTitle}>
-                                Información del cliente
+                                Información del producto
                             </div>
 
                             <div className={styles.formDescription}>
-                                Modifica los datos principales del cliente.
+                                Modifica los datos principales del producto.
                             </div>
                         </div>
                     </div>
 
                     <form
-                        id="client-edit-form"
+                        id="product-edit-form"
                         onSubmit={handleSubmit}
                         className={styles.formContainer}
                     >
@@ -228,7 +239,7 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
                                 htmlFor="name"
                                 className={styles.formLabel}
                             >
-                                Nombre del cliente
+                                Nombre del producto
                             </label>
 
                             <input
@@ -237,7 +248,7 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
-                                placeholder="Ej. Constructora Delta"
+                                placeholder="Ej. Cemento Portland"
                                 className={styles.formInput}
                                 required
                                 disabled={isMutating}
@@ -246,20 +257,22 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
 
                         <div className={styles.formGroup}>
                             <label
-                                htmlFor="email"
+                                htmlFor="basePrice"
                                 className={styles.formLabel}
                             >
-                                Correo electrónico
+                                Precio base
                             </label>
 
                             <input
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={formData.email}
+                                id="basePrice"
+                                type="number"
+                                name="basePrice"
+                                value={formData.basePrice}
                                 onChange={handleInputChange}
-                                placeholder="contacto@empresa.com"
+                                placeholder="Ej. 25.50"
                                 className={styles.formInput}
+                                min="0.01"
+                                step="0.01"
                                 required
                                 disabled={isMutating}
                             />
@@ -274,15 +287,11 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
                                 key={index}
                                 className={styles.auditItemCard}
                             >
-                                <div
-                                    className={styles.auditItemIcon}
-                                >
+                                <div className={styles.auditItemIcon}>
                                     {item.icon}
                                 </div>
 
-                                <div
-                                    className={styles.auditItemBody}
-                                >
+                                <div className={styles.auditItemBody}>
                                     <span
                                         className={
                                             styles.auditItemLabel
@@ -317,7 +326,7 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
 
                 <button
                     type="submit"
-                    form="client-edit-form"
+                    form="product-edit-form"
                     className={`${styles.button} ${styles.buttonSuccess}`}
                     disabled={isMutating}
                 >
@@ -331,21 +340,21 @@ function ClientEditForm({ client, onCancel, onSuccess }: {
 }
 
 // --- Main Component ---
-export default function ClientDetailClient({ clientId }: ClientDetailClientProps) {
+export default function ProductDetailClient({ productId }: ProductDetailClientProps) {
     const router = useRouter();
     const isMounted = useIsMounted();
 
     const {
-        data: client,
+        data: product,
         error,
         isLoading,
-    } = useSWR<Client>(
-        isMounted ? `/api/clientes/${clientId}` : null,
+    } = useSWR<Product>(
+        isMounted ? `/api/productos/${productId}` : null,
         fetcher,
     );
 
     const handleGoBack = () => {
-        router.push("/clientes");
+        router.push("/productos");
     };
 
     if (!isMounted || isLoading) {
@@ -354,24 +363,24 @@ export default function ClientDetailClient({ clientId }: ClientDetailClientProps
                 <div className={styles.loadingState}>
                     <div className={styles.loadingSpinner} />
 
-                    <span>Cargando cliente...</span>
+                    <span>Cargando producto...</span>
                 </div>
             </div>
         );
     }
 
-    if (error || !client) {
+    if (error || !product) {
         return (
             <div className={styles.secondaryCard}>
                 <div className={styles.errorState}>
                     <div className={styles.errorTitle}>
-                        No se pudo cargar el cliente
+                        No se pudo cargar el producto
                     </div>
 
                     <div className={styles.errorMessage}>
                         {error instanceof Error
                             ? error.message
-                            : "Cliente no encontrado."}
+                            : "Producto no encontrado."}
                     </div>
 
                     <button
@@ -380,7 +389,7 @@ export default function ClientDetailClient({ clientId }: ClientDetailClientProps
                         onClick={handleGoBack}
                     >
                         <FiArrowLeft />
-                        Volver a clientes
+                        Volver a productos
                     </button>
                 </div>
             </div>
@@ -401,13 +410,13 @@ export default function ClientDetailClient({ clientId }: ClientDetailClientProps
                     </button>
 
                     <div className={styles.titleCard}>
-                        Editar cliente
+                        Editar producto
                     </div>
                 </div>
             </div>
 
-            <ClientEditForm
-                client={client}
+            <ProductEditForm
+                product={product}
                 onCancel={handleGoBack}
                 onSuccess={handleGoBack}
             />

@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore, useMemo } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
+import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/useToast";
 import { FiRefreshCw, FiArrowLeft, FiPlus } from "react-icons/fi";
 import styles from "./productsClient.module.css";
@@ -76,6 +77,8 @@ const formatPrice = (price: string) => {
 // --- Main component ---
 export default function ProductsClient() {
     // state
+    const router = useRouter();
+
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
     const isMounted = useIsMounted();
@@ -283,7 +286,9 @@ export default function ProductsClient() {
                                     <div
                                         key={product.id}
                                         className={`${styles.productRow} ${styles.animatedRow}`}
-                                        role="row"
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => router.push(`/productos/${product.id}`)}
                                         style={{ "--index": index } as React.CSSProperties}
                                     >
                                         <div className={styles.cellNombre}>
