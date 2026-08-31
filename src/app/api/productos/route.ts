@@ -97,7 +97,7 @@ export async function POST(request: Request) {
                 nombre: normalizedName,
                 precioBase: parsedPrice,
                 createdBy: currentUser.id,
-                createdAt: undefined
+                updatedAt: undefined
             },
         });
 

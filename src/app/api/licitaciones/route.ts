@@ -138,7 +138,7 @@ export async function POST(request: Request) {
                 fechaLimite: parsedDeadline,
                 estado: "borrador",
                 createdBy: currentUser.id,
-                createdAt: undefined
+                updatedAt: undefined
             },
         });
 

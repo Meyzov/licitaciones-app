@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
@@ -69,6 +70,8 @@ const formatDate = (isoDate: string) => {
 // --- Main component ---
 export default function ClientsClient() {
     // state
+    const router = useRouter();
+
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
@@ -167,8 +170,8 @@ export default function ClientsClient() {
                             >
                                 <FiRefreshCw
                                     className={`${isLoadingState
-                                            ? styles.refreshIconSpinning
-                                            : ""
+                                        ? styles.refreshIconSpinning
+                                        : ""
                                         }`}
                                 />
                                 <span className={styles.refreshButtonText}>
@@ -279,7 +282,9 @@ export default function ClientsClient() {
                                     <div
                                         key={client.id}
                                         className={`${styles.clientRow} ${styles.animatedRow}`}
-                                        role="row"
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => router.push(`/clientes/${client.id}`)}
                                         style={
                                             { "--index": index } as React.CSSProperties
                                         }

@@ -4,7 +4,7 @@ import { getAuthenticatedUser } from "@/lib/get-authenticated-user";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function GET() {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const currentUser = await getAuthenticatedUser();
 
@@ -15,7 +15,17 @@ export async function GET() {
             );
         }
 
-        const clients = await prisma.cliente.findMany({
+        const { id } = await params;
+
+        if (!id) {
+            return NextResponse.json(
+                { error: "El ID del cliente es obligatorio." },
+                { status: 400 },
+            );
+        }
+
+        const client = await prisma.cliente.findUnique({
+            where: { id },
             select: {
                 id: true,
                 nombre: true,
@@ -23,19 +33,29 @@ export async function GET() {
                 createdAt: true,
                 updatedAt: true,
                 creador: {
-                    select: { nombre: true },
+                    select: {
+                        nombre: true,
+                    },
                 },
                 modificador: {
-                    select: { nombre: true },
+                    select: {
+                        nombre: true,
+                    },
                 },
             },
-            orderBy: { nombre: "asc" },
         });
 
-        return NextResponse.json(clients, { status: 200 });
+        if (!client) {
+            return NextResponse.json(
+                { error: "Cliente no encontrado." },
+                { status: 404 },
+            );
+        }
 
+        return NextResponse.json(client, { status: 200 });
     } catch (error) {
-        console.error("Error al obtener los clientes:", error);
+        console.error("Error al obtener el cliente:", error);
+
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },
@@ -43,7 +63,7 @@ export async function GET() {
     }
 }
 
-export async function POST(request: Request) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const currentUser = await getAuthenticatedUser();
 
@@ -54,7 +74,17 @@ export async function POST(request: Request) {
             );
         }
 
+        const { id } = await params;
+
+        if (!id) {
+            return NextResponse.json(
+                { error: "El ID del cliente es obligatorio." },
+                { status: 400 },
+            );
+        }
+
         const body = await request.json();
+
         const { name, email } = body;
 
         if (typeof name !== "string") {
@@ -65,6 +95,7 @@ export async function POST(request: Request) {
         }
 
         const normalizedName = name.trim();
+
         if (!normalizedName) {
             return NextResponse.json(
                 { error: "El nombre es obligatorio." },
@@ -80,6 +111,7 @@ export async function POST(request: Request) {
         }
 
         const normalizedEmail = email.trim().toLowerCase();
+
         if (!normalizedEmail || !EMAIL_REGEX.test(normalizedEmail)) {
             return NextResponse.json(
                 { error: "El email no es válido." },
@@ -87,29 +119,40 @@ export async function POST(request: Request) {
             );
         }
 
-        const newClient = await prisma.cliente.create({
+        const existingClient = await prisma.cliente.findUnique({
+            where: { id },
+        });
+
+        if (!existingClient) {
+            return NextResponse.json(
+                { error: "Cliente no encontrado." },
+                { status: 404 },
+            );
+        }
+
+        const updatedClient = await prisma.cliente.update({
+            where: { id },
             data: {
                 nombre: normalizedName,
                 email: normalizedEmail,
-                createdBy: currentUser.id,
-                updatedAt: undefined
+                updatedBy: currentUser.id,
             },
         });
 
         return NextResponse.json(
             {
-                message: "Cliente creado exitosamente.",
+                message: "Cliente actualizado exitosamente.",
                 client: {
-                    id: newClient.id,
-                    name: newClient.nombre,
-                    email: newClient.email,
+                    id: updatedClient.id,
+                    name: updatedClient.nombre,
+                    email: updatedClient.email,
                 },
             },
-            { status: 201 },
+            { status: 200 },
         );
-
     } catch (error) {
-        console.error("Error al crear el cliente:", error);
+        console.error("Error al actualizar el cliente:", error);
+
         return NextResponse.json(
             { error: "Error interno del servidor." },
             { status: 500 },
