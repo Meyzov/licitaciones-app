@@ -28,7 +28,7 @@ Crea un archivo `.env` en la raíz con:
 
 ```bash
 DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>
-NEXT_PUBLIC_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://<tu-proyecto-id>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<tu-publishable-key>
 SUPABASE_SECRET_KEY=<tu-secret-key>
 RESEND_API_KEY=re_xxxxxxxxxxxx
