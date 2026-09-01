@@ -27,13 +27,11 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     box-sizing: border-box;
     width: 100%;
-    height: 100%;
-    min-height: 0;
-    flex: 1 1 300px;
+    display: flex;
     flex-direction: column;
     gap: 16px;
-    display: flex;
-    overflow: hidden;
+    flex: 1;
+    overflow: visible;
 }
 
 /* --- Buttons --- */
@@ -170,7 +168,7 @@
     color: #4a453d;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    min-width: 1200px;
+    min-width: 1400px;
     align-items: center;
     line-height: 1.5;
 }
@@ -198,7 +196,7 @@
     border-bottom: 1px solid #f0ece2;
     font-size: 11px;
     transition: background-color 0.12s ease;
-    min-width: 1200px;
+    min-width: 1400px;
     align-items: center;
     line-height: 1.5;
 }
