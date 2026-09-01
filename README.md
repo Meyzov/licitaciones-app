@@ -104,28 +104,44 @@ El endpoint `GET /api/cron/verificar-licitaciones` requiere el header `Authoriza
 
 ## Estructura del proyecto
 
-prisma/ → schema y migraciones
+```Bash
+prisma/
+├── schema.prisma
+└── migrations/
+
 src/
-app/
-auth/ → login, logout
-dashboard/ → panel principal con KPIs y próximas a vencer
-clientes/ → listado, creación y edición ([id]) de clientes
-productos/ → listado, creación y edición ([id]) de productos
-usuarios/ → listado, creación y edición ([id]) de usuarios (creación solo para admins)
-licitaciones/
-[id]/ → detalle general + envío de documento
-[id]/productos/ → agregar/quitar productos, valida presupuesto
-[id]/transiciones/ → historial de cambios de estado
-[id]/pagos/ → registrar pagos, saldo pendiente
-api/ → todos los endpoints REST (route handlers)
-components/
-layout/ → sidePanel, topPanel, menuLayoutClient (+ sus CSS)
-email-template.tsx → plantilla del correo de envío de licitación
-email-reminder.tsx → plantilla del correo de recordatorio (48h)
-lib/ → Prisma client, Supabase clients, helpers (auth, dinero, toast)
-scripts/
-seed-admin.ts → crea el primer administrador
-seed-system.ts → crea el usuario de sistema (para SYSTEM_USER_ID)
+├── app/
+│   ├── (app)/                  → rutas privadas, comparten layout con sidebar
+│   │   ├── dashboard/           → panel principal con KPIs y próximas a vencer
+│   │   ├── clientes/            → listado, creación y edición ([id])
+│   │   ├── productos/           → listado, creación y edición ([id])
+│   │   ├── usuarios/            → listado, creación y edición ([id]) — creación solo admins
+│   │   └── licitaciones/
+│   │       ├── [id]/            → detalle general + subir/enviar documento
+│   │       ├── [id]/productos/  → agregar/quitar productos, valida presupuesto
+│   │       ├── [id]/transiciones/ → historial de cambios de estado
+│   │       └── [id]/pagos/      → registrar pagos, saldo pendiente
+│   ├── auth/
+│   │   ├── login/
+│   │   └── logout/
+│   └── api/                     → todos los endpoints REST (route handlers)
+│
+├── components/
+│   ├── email-template.tsx       → plantilla del correo de envío de licitación
+│   ├── email-reminder.tsx       → plantilla del correo de recordatorio (48h)
+│   └── layout/                  → sidePanel, topPanel, menuLayoutClient (+ sus CSS)
+│
+├── lib/
+│   ├── supabase/                → clients de Supabase (client y server)
+│   ├── prisma.ts                → instancia compartida de Prisma
+│   ├── get-authenticated-user.ts
+│   ├── money.ts                 → helper de redondeo monetario
+│   └── useToast.ts
+│
+└── scripts/
+    ├── seed-admin.ts             → crea el primer administrador
+    └── seed-system.ts            → crea el usuario de sistema (para SYSTEM_USER_ID)
+```
 
 ## Modelo de datos y reglas de negocio
 
