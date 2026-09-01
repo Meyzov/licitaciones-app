@@ -27,7 +27,7 @@ npm install
 Crea un archivo `.env` en la raíz con:
 
 ```bash
-DATABASE_URL=postgresql://postgres:<password>@<host>.supabase.co:5432/postgres
+DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>
 NEXT_PUBLIC_SUPABASE_URL=https://<tu-proyecto>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<tu-publishable-key>
 SUPABASE_SECRET_KEY=<tu-secret-key>
@@ -36,7 +36,7 @@ CRON_SECRET=<un-string-secreto-cualquiera>
 SYSTEM_USER_ID=<se-completa-en-el-paso-4>
 ```
 
-Las claves de Supabase se obtienen en el dashboard (Project Settings → API y Database), la de Resend en su dashboard (API Keys).
+Las claves de Supabase se obtienen en el dashboard (Connect -> Direct (Session pooler) y tambien en Connect -> Server), la de Resend en su dashboard (API Keys).
 
 ### 3. Migrar la base de datos
 
