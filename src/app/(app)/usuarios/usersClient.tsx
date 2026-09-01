@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore, useRef, useEffect, useMemo } from "reac
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { useToast } from "@/lib/useToast";
+import { useRouter } from "next/navigation";
 import { FiRefreshCw, FiArrowLeft, FiPlus, FiChevronDown } from "react-icons/fi";
 import styles from "./usersClient.module.css";
 
@@ -63,6 +64,8 @@ type UsersClientProps = {
 // --- Main component ---
 export default function UsersClient({ isAdmin }: UsersClientProps) {
     // state
+    const router = useRouter();
+
     const [isCreating, setIsCreating] = useState(false);
     const [animKey, setAnimKey] = useState(0);
     const isMounted = useIsMounted();
@@ -189,8 +192,8 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                             >
                                 <FiRefreshCw
                                     className={`${styles.refreshIcon} ${isLoadingState
-                                            ? styles.refreshIconSpinning
-                                            : ""
+                                        ? styles.refreshIconSpinning
+                                        : ""
                                         }`}
                                 />
                                 <span className={styles.refreshButtonText}>
@@ -291,8 +294,8 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                                         <span>{roleLabels[formData.role]}</span>
                                         <FiChevronDown
                                             className={`${styles.icon} ${isRoleOpen
-                                                    ? styles.iconRotated
-                                                    : ""
+                                                ? styles.iconRotated
+                                                : ""
                                                 }`}
                                         />
                                     </div>
@@ -379,7 +382,9 @@ export default function UsersClient({ isAdmin }: UsersClientProps) {
                                     <div
                                         key={user.id}
                                         className={`${styles.userRow} ${styles.animatedRow}`}
-                                        role="row"
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => router.push(`/usuarios/${user.id}`)}
                                         style={
                                             { "--index": index } as React.CSSProperties
                                         }

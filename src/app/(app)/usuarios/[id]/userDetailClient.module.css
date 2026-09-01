@@ -166,12 +166,28 @@
     line-height: 1.5;
 }
 
+.inputWithIcon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.inputWithIcon>svg {
+    position: absolute;
+    left: 16px;
+    color: #8a8375;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 1;
+}
+
 .formInput {
     background: #fcfbf9;
     border-radius: 12px;
     border: 1px solid #ded9cb;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-    padding: 14px 16px;
+    padding: 14px 16px 14px 44px;
     font-size: 14px;
     outline: none;
     color: #5c5548;
@@ -203,13 +219,19 @@
     cursor: not-allowed;
 }
 
-.auditSection {
+.formHint {
+    font-size: 11px;
+    color: #a8a090;
+    line-height: 1.5;
+}
+
+.accountSection {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.auditSectionTitle {
+.accountSectionTitle {
     font-size: 13px;
     font-weight: 700;
     color: #4a453d;
@@ -218,13 +240,13 @@
     padding-left: 4px;
 }
 
-.auditGrid {
+.accountGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
 
-.auditItemCard {
+.accountItemCard {
     background-color: #fcfbf9;
     border: 1px solid #ded9cb;
     border-radius: 12px;
@@ -235,12 +257,12 @@
     transition: box-shadow 0.2s, transform 0.15s;
 }
 
-.auditItemCard:hover {
+.accountItemCard:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transform: translateY(-1px);
 }
 
-.auditItemIcon {
+.accountItemIcon {
     width: 36px;
     height: 36px;
     min-width: 36px;
@@ -254,14 +276,14 @@
     font-size: 15px;
 }
 
-.auditItemBody {
+.accountItemBody {
     display: flex;
     flex-direction: column;
     gap: 3px;
     min-width: 0;
 }
 
-.auditItemLabel {
+.accountItemLabel {
     font-size: 10px;
     font-weight: 700;
     color: #a8a090;
@@ -270,7 +292,7 @@
     line-height: 1.5;
 }
 
-.auditItemValue {
+.accountItemValue {
     font-size: 13px;
     color: #5c5548;
     line-height: 1.5;
@@ -410,12 +432,12 @@
         padding: 16px;
     }
 
-    .auditGrid {
+    .accountGrid {
         grid-template-columns: 1fr;
         gap: 10px;
     }
 
-    .auditItemCard {
+    .accountItemCard {
         padding: 14px 16px;
     }
 
@@ -432,6 +454,6 @@
     .formInput {
         min-height: 56px;
         font-size: 14px;
-        padding: 14px 12px;
+        padding: 14px 12px 14px 42px;
     }
 }
