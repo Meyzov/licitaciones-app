@@ -12,6 +12,8 @@ Aplicación web donde una empresa administra licitaciones comerciales para sus c
 - **Tarea programada**: endpoint HTTP protegido por secret, invocado cada 10 minutos por [cron-job.org](https://console.cron-job.org)
 - **Despliegue**: Render
 
+Enlace funcional: https://licitaciones-app-t1uq.onrender.com
+
 ## Instalación local
 
 ### 1. Clonar e instalar dependencias
