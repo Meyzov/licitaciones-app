@@ -136,6 +136,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
                 nombre: normalizedName,
                 email: normalizedEmail,
                 updatedBy: currentUser.id,
+                updatedAt: new Date(),
             },
         });
 

@@ -189,6 +189,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                 },
             });
 
+            await tx.licitacion.update({
+                where: { id: bidId },
+                data: {
+                    updatedAt: new Date(),
+                    updatedBy: currentUser.id,
+                },
+            });
+
             if (isFullyPaid) {
                 await tx.licitacion.update({
                     where: { id: bidId },
